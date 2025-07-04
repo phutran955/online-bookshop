@@ -3,10 +3,10 @@
     Created on : May 29, 2025, 10:21:32 PM
     Author     : trang
 --%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-
 <c:set var="isAdmin" value="${currentUser.roleID eq 'AD'}" />
 
 <!DOCTYPE html>
@@ -15,197 +15,168 @@
     <head>
         <title>BookSaw</title>
         <jsp:include page = "components/link.jsp"></jsp:include>
+        <link rel="stylesheet" href="assets/css02/index.css">
     </head>
 
     <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
+    <jsp:include page = "components/header.jsp"></jsp:include>
 
-        <jsp:include page = "components/header.jsp"></jsp:include>
+        <!-- Banner -->
+        <section id="promo-banner">
+            <div class="banner-wrapper">
+                <img src="assets/images/Blue Green Summer Super Sale Banner.png"
+                     alt="Big Sale Banner"
+                     class="banner-image">
+            </div>
+        </section>
 
-            <!-- Billboard -->
-            <section id="billboard">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <button class="prev slick-arrow">
-                                <i class="icon icon-arrow-left"></i>
-                            </button>
-
-                            <div class="main-slider pattern-overlay">
-                                <div class="slider-item">
-                                    <div class="banner-content">
-                                        <h2 class="banner-title">Life of the Wild</h2>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed eu feugiat amet, libero
-                                            ipsum enim pharetra hac. Urna commodo, lacus ut magna velit eleifend. Amet, quis
-                                            urna, a eu.</p>
-                                        <div class="btn-wrap">
-                                            <a href="#" class="btn btn-outline-accent btn-accent-arrow">Read More<i
-                                                    class="icon icon-ns-arrow-right"></i></a>
-                                        </div>
-                                    </div><!--banner-content-->
-                                    <img src="assets/images/main-banner1.jpg" alt="banner" class="banner-image">
-                                </div>
-                            </div>
-
-                            <button class="next slick-arrow">
-                                <i class="icon icon-arrow-right"></i>
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Offer -->
-            <section id="special-offer" class="bookshelf pb-5 mb-5">
-                <div class="section-header align-center">
-                    <div class="title">
-                        <span>Grab your opportunity</span>
-                    </div>
-                    <h2 class="section-title">Books with offer</h2>
-                </div>
-
-                <div class="container">
-                    <div class="row">
-                        <div class="inner-content">
-                            <div class="product-list" data-aos="fade-up">
-                                <div class="grid product-grid">
-                                    <div class="product-item">
-                                        <figure class="product-style">
-                                            <img src="assets/images/product-item5.jpg" alt="Books" class="product-item">
-                                            <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-                                                Cart</button>
-                                        </figure>
-                                        <figcaption>
-                                            <h3>Simple way of piece life</h3>
-                                            <span>Armor Ramsey</span>
-                                            <div class="item-price">
-                                                <span class="prev-price">$ 50.00</span>$ 40.00
-                                            </div>
-                                        </figcaption>
-                                    </div>
-
-
-                                    <div class="product-item">
-                                        <figure class="product-style">
-                                            <img src="assets/images/product-item6.jpg" alt="Books" class="product-item">
-                                            <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-                                                Cart</button>
-                                        </figure>
-                                        <figcaption>
-                                            <h3>Great travel at desert</h3>
-                                            <span>Sanchit Howdy</span>
-                                            <div class="item-price">
-                                                <span class="prev-price">$ 30.00</span>$ 38.00
-                                            </div>
-                                        </figcaption>
-                                    </div>
-
-                                    <div class="product-item">
-                                        <figure class="product-style">
-                                            <img src="assets/images/product-item7.jpg" alt="Books" class="product-item">
-                                            <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-                                                Cart</button>
-                                        </figure>
-                                        <figcaption>
-                                            <h3>The lady beauty Scarlett</h3>
-                                            <span>Arthur Doyle</span>
-                                            <div class="item-price">
-                                                <span class="prev-price">$ 35.00</span>$ 45.00
-                                            </div>
-                                    </div>
-                                    </figcaption>
-
-                                    <div class="product-item">
-                                        <figure class="product-style">
-                                            <img src="assets/images/product-item8.jpg" alt="Books" class="product-item">
-                                            <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-                                                Cart</button>
-                                        </figure>
-                                        <figcaption>
-                                            <h3>Once upon a time</h3>
-                                            <span>Klien Marry</span>
-                                            <div class="item-price">
-                                                <span class="prev-price">$ 25.00</span>$ 35.00
-                                            </div>
-                                    </div>
-                                    </figcaption>
-
-                                    <div class="product-item">
-                                        <figure class="product-style">
-                                            <img src="assets/images/product-item2.jpg" alt="Books" class="product-item">
-                                            <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
-                                                Cart</button>
-                                        </figure>
-                                        <figcaption>
-                                            <h3>Simple way of piece life</h3>
-                                            <span>Armor Ramsey</span>
-                                            <div class="item-price">$ 40.00</div>
-                                        </figcaption>
-                                    </div>
-                                </div><!--grid-->
-                            </div>
-                        </div><!--inner-content-->
-                    </div>
-                </div>
-            </section>
-
-
-            <!-- Featured Books -->
-            <section id="featured-books" class="py-5 my-5">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-
-                            <div class="section-header align-center">
-                                <div class="title"><span>Some quality items</span></div>
-                                <h2 class="section-title">New Arrivals</h2>
-                            </div>
-
-                            <div class="product-list" data-aos="fade-up">
-                                <div class="row">
-                                <c:choose>
-                                    <c:when test="${not empty listP}">
-                                        <c:forEach var="p" items="${listP}">
-                                            <div class="col-md-3">
-                                                <div class="product-item">
-                                                    <figure class="product-style">
-                                                        <img src="${p.image}" alt="${p.productName}" class="product-item">
-                                                        <button type="button" class="add-to-cart">Add to Cart</button>
-                                                    </figure>
-                                                    <figcaption>
-                                                        <h3>${p.productName}</h3>
-                                                        <div class="item-price">
-                                                            <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0"/> đ
-                                                        </div>
-                                                    </figcaption>
-                                                </div>
-                                            </div>
-                                        </c:forEach>
-                                    </c:when>
-
-                                    <c:otherwise>
-                                        <div class="col-md-12">
-                                            <p>No featured products available.</p>
-                                        </div>
-                                    </c:otherwise>
-                                </c:choose>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+        
+        <!-- Featured Books -->
+        <section id="featured-books" class="py-5 my-5">
+            <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="btn-wrap align-right">
-                            <a href="MainController?action=viewAllProducts" class="btn-accent-arrow">
-                                View all products <i class="icon icon-ns-arrow-right"></i>
-                            </a>
+
+                        <div class="section-header align-center">
+                            <div class="title"><span>Some quality items</span></div>
+                            <h2 class="section-title">New Arrivals</h2>
+                        </div>
+
+                        <div class="product-list" data-aos="fade-up">
+                            <div class="row">
+                            <c:choose>
+                                <c:when test="${not empty listP}">
+                                    <c:forEach var="p" items="${listP}">
+                                        <div class="col-md-3">
+                                            <div class="product-item">
+                                                <figure class="product-style">
+                                                    <img src="${p.image}" alt="${p.productName}" class="product-item">
+                                                    <button type="button" class="add-to-cart">Add to Cart</button>
+                                                </figure>
+                                                <figcaption>
+                                                    <h3>${p.productName}</h3>
+                                                    <div class="item-price">
+                                                        <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0"/> đ
+                                                    </div>
+                                                </figcaption>
+                                            </div>
+                                        </div>
+                                    </c:forEach>
+                                </c:when>
+
+                                <c:otherwise>
+                                    <div class="col-md-12">
+                                        <p>No featured products available.</p>
+                                    </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-        <jsp:include page = "components/footer.jsp"></jsp:include>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-wrap align-right">
+                        <a href="MainController?action=viewAllProducts" class="btn-accent-arrow">
+                            View all products <i class="icon icon-ns-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Offer -->
+    <section id="special-offer" class="bookshelf pb-5 mb-5">
+        <div class="section-header align-center">
+            <div class="title">
+                <span>Grab your opportunity</span>
+            </div>
+            <h2 class="section-title">Books with offer</h2>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="inner-content">
+                    <div class="product-list" data-aos="fade-up">
+                        <div class="grid product-grid">
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="assets/images/product-item5.jpg" alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+                                        Cart</button>
+                                </figure>
+                                <figcaption>
+                                    <h3>Simple way of piece life</h3>
+                                    <span>Armor Ramsey</span>
+                                    <div class="item-price">
+                                        <span class="prev-price">$ 50.00</span>$ 40.00
+                                    </div>
+                                </figcaption>
+                            </div>
+
+
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="assets/images/product-item6.jpg" alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+                                        Cart</button>
+                                </figure>
+                                <figcaption>
+                                    <h3>Great travel at desert</h3>
+                                    <span>Sanchit Howdy</span>
+                                    <div class="item-price">
+                                        <span class="prev-price">$ 30.00</span>$ 38.00
+                                    </div>
+                                </figcaption>
+                            </div>
+
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="assets/images/product-item7.jpg" alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+                                        Cart</button>
+                                </figure>
+                                    <h3>The lady beauty Scarlett</h3>
+                                    <span>Arthur Doyle</span>
+                                    <div class="item-price">
+                                        <span class="prev-price">$ 35.00</span>$ 45.00
+                                    </div>
+                            </div>
+                            </figcaption>
+
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="assets/images/product-item8.jpg" alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+                                        Cart</button>
+                                </figure>
+                                    <h3>Once upon a time</h3>
+                                    <span>Klien Marry</span>
+                                    <div class="item-price">
+                                        <span class="prev-price">$ 25.00</span>$ 35.00
+                                    </div>
+                            </div>
+
+                            <div class="product-item">
+                                <figure class="product-style">
+                                    <img src="assets/images/product-item2.jpg" alt="Books" class="product-item">
+                                    <button type="button" class="add-to-cart" data-product-tile="add-to-cart">Add to
+                                        Cart</button>
+                                </figure>
+                                <figcaption>
+                                    <h3>Simple way of piece life</h3>
+                                    <span>Armor Ramsey</span>
+                                    <div class="item-price">$ 40.00</div>
+                                </figcaption>
+                            </div>
+                        </div><!--grid-->
+                    </div>
+                </div><!--inner-content-->
+            </div>
+        </div>
+    </section>
+    <jsp:include page = "components/footer.jsp"></jsp:include>
     </body>
 </html>
