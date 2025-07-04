@@ -7,6 +7,7 @@ package model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Date;
 import utils.DbUtils;
 
 /**
@@ -50,13 +51,19 @@ public class UserDAO {
 
             // B4 - Duyet bang
             while (rs.next()) {
-                String username = rs.getString("username");
+                int userID = rs.getInt("userID");
+                String userName = rs.getString("userName");
                 String fullName = rs.getString("fullName");
                 String password = rs.getString("password");
                 String roleID = rs.getString("roleID");
+                String email = rs.getString("email");
+                Date birthday = rs.getDate("birthDay");
+                String address = rs.getString("address");
+                String phone = rs.getString("phone");
                 boolean status = rs.getBoolean("status");
 
-                user = new UserDTO(username, password, fullName, roleID, status);
+                user = new UserDTO(userID, userName, fullName, password, roleID, email, birthday, address, phone, status);
+
             }
         } catch (Exception e) {
             System.out.println(e);
