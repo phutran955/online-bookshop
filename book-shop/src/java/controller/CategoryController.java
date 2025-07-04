@@ -33,8 +33,8 @@ public class CategoryController extends HttpServlet {
         try {
             String action = request.getParameter("action");
             if (action.equals("viewCat")) {
-                url = "";
-                
+                url = handleViewCat(request, response);
+
             } else if (action.equals("viewAllProducts")) {
                 url = handleViewAllProducts(request, response);
             }
@@ -44,7 +44,7 @@ public class CategoryController extends HttpServlet {
         }
     }
 
-   /* private String handleViewCat(HttpServletRequest request, HttpServletResponse response) {
+    private String handleViewCat(HttpServletRequest request, HttpServletResponse response) {
         String catID = request.getParameter("catID"); //call catID 
         int cat_value = Integer.parseInt(catID);
 
@@ -54,7 +54,7 @@ public class CategoryController extends HttpServlet {
         List<CategoryDTO> listC = cdao.getAllCategory(); //reload the cat
         request.setAttribute("listC", listC);
         return "productsDisplay.jsp";
-    }*/
+    }
 
     private String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
         List<CategoryDTO> listC = cdao.getAllCategory();

@@ -35,19 +35,19 @@ public class ProductController extends HttpServlet {
                 url = "";
 
             } else if (action.equals("searchProduct")) {
-                url = "";
+                url = handleProductSearching(request, response);
 
             } else if (action.equals("changeProductStatus")) {
                 url = "";
 
             } else if (action.equals("editProduct")) {
-                url = "";
+                url = handleProductEditing(request, response);
 
             } else if (action.equals("updateProduct")) {
                 url = "";
 
             } else if (action.equals("viewProduct")) {
-                url = "";
+                url = handleViewProduct(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -55,7 +55,7 @@ public class ProductController extends HttpServlet {
         }
     }
 
-    /*private String handleViewProduct(HttpServletRequest request, HttpServletResponse response) {
+    private String handleViewProduct(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("id");
         int id_value = Integer.parseInt(id);
         ProductDTO oneP = pdao.getProductByID(id_value);
@@ -71,14 +71,14 @@ public class ProductController extends HttpServlet {
         return "productEdit.jsp";
     }
 
-    private String handleProductStatusChanging(HttpServletRequest request, HttpServletResponse response) {
+    /*private String handleProductStatusChanging(HttpServletRequest request, HttpServletResponse response) {
         String productId = request.getParameter("productId");
         int id_value = Integer.parseInt(productId);
         if (AuthUtils.isAdmin(request)) {
             pdao.updateStatus(id_value, false);
         }
         return handleProductSearching(request, response);
-    }
+    }*/
 
     private String handleProductEditing(HttpServletRequest request, HttpServletResponse response) {
         String productId = request.getParameter("productId");
@@ -98,7 +98,7 @@ public class ProductController extends HttpServlet {
         return handleProductSearching(request, response);
     }
 
-    private String handleProductAdding(HttpServletRequest request, HttpServletResponse response) {
+    /*private String handleProductAdding(HttpServletRequest request, HttpServletResponse response) {
         if (AuthUtils.isAdmin(request)) {
             String checkError = "";
             String message = "";

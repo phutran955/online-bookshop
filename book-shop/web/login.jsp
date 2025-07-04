@@ -11,22 +11,13 @@
     <head>
         <meta charset="UTF-8">
         <title>Login</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="assets/css/normalize.css">
-        <link rel="stylesheet" type="text/css" href="assets/icomoon/icomoon.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/vendor.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <jsp:include page = "components/link.jsp"></jsp:include>
         <link rel="stylesheet" type="text/css" href="assets/css02/login.css">
     </head>
 
     <body>
-        <jsp:include page = "top.jsp"></jsp:include>
+        
+        <jsp:include page = "components/header.jsp"></jsp:include>
 
         <c:choose>
             <c:when test="${not empty sessionScope.user}">
@@ -58,7 +49,7 @@
             </c:otherwise>
         </c:choose>
 
-        <jsp:include page = "footer.jsp"></jsp:include>
+        <jsp:include page = "components/footer.jsp"></jsp:include>
 
     </body>
 </html>

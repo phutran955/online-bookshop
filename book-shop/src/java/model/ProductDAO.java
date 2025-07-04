@@ -25,10 +25,9 @@ public class ProductDAO {
 
     private static final String CREATE_PRODUCT = "INSERT INTO tblProducts (name, image, description, price, catID, status, author) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_PRODUCT = "UPDATE tblProducts SET name = ?, image=?, description = ?, price = ?, catID = ?, status = ?, author = ? WHERE id = ?";
-
     private static final String DELETE_PRODUCT = "DELETE FROM tblProducts WHERE id = ?";
 
-    /*public List<ProductDTO> getAll() {
+    public List<ProductDTO> getAll() {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -41,14 +40,28 @@ public class ProductDAO {
 
             while (rs.next()) {
                 ProductDTO product = new ProductDTO();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setImage(rs.getString("image"));
-                product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getDouble("price"));
-                product.setCatID(rs.getInt("catID"));
-                product.setStatus(rs.getBoolean("status"));
-                product.setAuthor(rs.getString("author"));
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
 
                 products.add(product);
             }
@@ -60,15 +73,15 @@ public class ProductDAO {
         }
 
         return products;
-    }*/
+    }
 
- /*public ProductDTO getProductByID(int id) {  //get 1 sp
+    public ProductDTO getProductByID(int id) {  //get 1 sp
         ProductDTO product = null;
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String sql = GET_ALL_PRODUCTS + " WHERE id = ? AND status = 1";
+        String sql = GET_ALL_PRODUCTS + " WHERE ProductID = ? AND Status = 1";
 
         try {
             conn = DbUtils.getConnection();
@@ -78,14 +91,18 @@ public class ProductDAO {
 
             if (rs.next()) {
                 product = new ProductDTO();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setImage(rs.getString("image"));
-                product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getDouble("price"));
-                product.setCatID(rs.getInt("catID"));
-                product.setStatus(rs.getBoolean("status"));
-                product.setAuthor(rs.getString("author"));
+                
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
             }
         } catch (Exception e) {
             System.err.println("Error in getProductByID(): " + e.getMessage());
@@ -95,7 +112,8 @@ public class ProductDAO {
         }
 
         return product;
-    }*/
+    }
+    
     public List<ProductDTO> getAllActiveProducts() {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
@@ -146,31 +164,44 @@ public class ProductDAO {
         return products;
     }
 
-
-    /*public List<ProductDTO> getProductsByCatID(int catID) {
+    public List<ProductDTO> getProductsByCatID(int categoryId) {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = GET_ALL_PRODUCTS + " WHERE catID like ? and status=1";
+        String query = GET_ALL_PRODUCTS + " WHERE CategoryID like ? and Status=1";
 
         try {
             conn = DbUtils.getConnection();
             ps = conn.prepareStatement(query);
-            ps.setInt(1, catID);
+            ps.setInt(1, categoryId);
             rs = ps.executeQuery();
 
             while (rs.next()) {
                 ProductDTO product = new ProductDTO();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setImage(rs.getString("image"));
-                product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getDouble("price"));
-                product.setCatID(rs.getInt("catID"));
-                product.setStatus(rs.getBoolean("status"));
-                product.setAuthor(rs.getString("author"));
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
 
                 products.add(product);
             }
@@ -190,7 +221,7 @@ public class ProductDAO {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = GET_ALL_PRODUCTS + " WHERE name like ? and status=1";
+        String query = GET_ALL_PRODUCTS + " WHERE ProductName like ? and Status=1";
 
         try {
             conn = DbUtils.getConnection();
@@ -200,14 +231,28 @@ public class ProductDAO {
 
             while (rs.next()) {
                 ProductDTO product = new ProductDTO();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setImage(rs.getString("image"));
-                product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getDouble("price"));
-                product.setCatID(rs.getInt("catID"));
-                product.setStatus(rs.getBoolean("status"));
-                product.setAuthor(rs.getString("author"));
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
 
                 products.add(product);
             }
@@ -227,7 +272,7 @@ public class ProductDAO {
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String query = GET_ALL_PRODUCTS + " WHERE status = ?";
+        String query = GET_ALL_PRODUCTS + " WHERE Status = ?";
 
         try {
             conn = DbUtils.getConnection();
@@ -237,14 +282,28 @@ public class ProductDAO {
 
             while (rs.next()) {
                 ProductDTO product = new ProductDTO();
-                product.setId(rs.getInt("id"));
-                product.setName(rs.getString("name"));
-                product.setImage(rs.getString("image"));
-                product.setDescription(rs.getString("description"));
-                product.setPrice(rs.getDouble("price"));
-                product.setCatID(rs.getInt("catID"));
-                product.setStatus(rs.getBoolean("status"));
-                product.setAuthor(rs.getString("author"));
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
 
                 products.add(product);
             }
@@ -259,7 +318,7 @@ public class ProductDAO {
     }
 
 
-    public boolean create(ProductDTO product) {
+    /* public boolean create(ProductDTO product) {
         boolean success = false;
         Connection conn = null;
         PreparedStatement ps = null;

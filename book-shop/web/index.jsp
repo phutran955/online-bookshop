@@ -14,22 +14,12 @@
 
     <head>
         <title>BookSaw</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="format-detection" content="telephone=no">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="assets/css/normalize.css">
-        <link rel="stylesheet" type="text/css" href="assets/icomoon/icomoon.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/vendor.css">
-        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+        <jsp:include page = "components/link.jsp"></jsp:include>
     </head>
 
     <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
 
-        <jsp:include page = "top.jsp"></jsp:include>
+        <jsp:include page = "components/header.jsp"></jsp:include>
 
             <!-- Billboard -->
             <section id="billboard">
@@ -166,12 +156,12 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12">
-                            
+
                             <div class="section-header align-center">
                                 <div class="title"><span>Some quality items</span></div>
                                 <h2 class="section-title">New Arrivals</h2>
                             </div>
-                            
+
                             <div class="product-list" data-aos="fade-up">
                                 <div class="row">
                                 <c:choose>
@@ -186,14 +176,14 @@
                                                     <figcaption>
                                                         <h3>${p.productName}</h3>
                                                         <div class="item-price">
-                                                            $<fmt:formatNumber value="${p.unitPrice}" type="number" maxFractionDigits="2"/>
+                                                            <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0"/> đ
                                                         </div>
                                                     </figcaption>
                                                 </div>
                                             </div>
                                         </c:forEach>
                                     </c:when>
-                                    
+
                                     <c:otherwise>
                                         <div class="col-md-12">
                                             <p>No featured products available.</p>
@@ -216,6 +206,6 @@
                 </div>
             </div>
         </section>
-        <jsp:include page = "footer.jsp"></jsp:include>
+        <jsp:include page = "components/footer.jsp"></jsp:include>
     </body>
 </html>
