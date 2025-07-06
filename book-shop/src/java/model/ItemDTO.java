@@ -9,34 +9,17 @@ package model;
  * @author trang
  */
 public class ItemDTO {  
-    private int id;
-    private UserDTO user;
     private ProductDTO product;
     private int quantity;
+    private double price;
 
     public ItemDTO() {
     }
 
-    public ItemDTO(UserDTO user, ProductDTO product, int quantity) {
-        this.user = user;
+    public ItemDTO(ProductDTO product, int quantity, double price) {
         this.product = product;
         this.quantity = quantity;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public UserDTO getUser() {
-        return user;
-    }
-
-    public void setUser(UserDTO user) {
-        this.user = user;
+        this.price = product.getSalePrice();
     }
 
     public ProductDTO getProduct() {
@@ -55,13 +38,11 @@ public class ItemDTO {
         this.quantity = quantity;
     }
 
-    public boolean increaseQuantity(int quantity) {
-        this.quantity += quantity;
-        return true;
+    public double getPrice() {
+        return price;
     }
 
-    public double getTotalPrice() {
-        return product.getUnitPrice() * quantity;
+    public void setPrice(double price) {
+        this.price = price;
     }
-
 }

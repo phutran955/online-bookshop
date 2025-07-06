@@ -156,12 +156,21 @@ public class ProductDTO {
         this.discount = discount;
     }
 
+    public double getSalePrice() {
+        if (discount > 0) {
+            double salePrice = unitPrice * (1 - discount);
+            return Math.round(salePrice * 100.0) / 100.0;
+        } else {
+            return unitPrice;
+        }
+    }
+
     public boolean isStatus() {
         return status;
     }
 
     public void setStatus(boolean status) {
         this.status = status;
-    } 
+    }
 
 }

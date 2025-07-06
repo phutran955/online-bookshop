@@ -29,7 +29,6 @@ public class UserController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         
-        // Mặc định sẽ chuyển hướng đến trang đăng nhập ???
         String url = LOGIN_PAGE;
         
         try {
@@ -48,7 +47,6 @@ public class UserController extends HttpServlet {
             }
         } catch (Exception e) {
         } finally {
-            // Chuyển tiếp đến trang JSP tương ứng
             request.getRequestDispatcher(url).forward(request, response);
         }
     }
@@ -66,7 +64,7 @@ public class UserController extends HttpServlet {
         if (userDAO.login(username, password)) {
             // Dang nhap thanh cong
             url = "index.jsp";
-            UserDTO user = userDAO.getUserById(username);
+            UserDTO user = userDAO.getUserByUserName(username);
             session.setAttribute("user", user);
         } else {
             // Dang nhap that bai

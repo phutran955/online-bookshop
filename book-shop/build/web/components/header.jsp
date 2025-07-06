@@ -11,27 +11,29 @@
 <c:set var="isAdmin" value="${currentUser.roleID eq 'AD'}" />
 
 <div id="header-wrap">
-    
+
     <!-- 1st HEAD -->
     <div class="top-content">
         <div class="container-fluid">
             <div class="row">
-
-                <!-- WELCOME -->
                 <div class="col-md-6">
-                    <div class="welcome-message">
-                        <span style="font-weight: 600; font-size: 1.5rem">
-                            Greetings, 
-                            <c:choose>
-                                <c:when test="${not empty sessionScope.user}">
-                                    ${sessionScope.user.fullName}
-                                </c:when>
-                                <c:otherwise>Guest</c:otherwise>
-                            </c:choose>.
-                        </span>
+                    <div class="social-links">
+                        <ul>
+                            <li>
+                                <a href="#"><i class="icon icon-facebook"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon icon-twitter"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon icon-youtube-play"></i></a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="icon icon-behance-square"></i></a>
+                            </li>
+                        </ul>
                     </div>
-                </div>
-
+                </div>              
                 <div class="col-md-6">
                     <div class="right-element">
                         <c:choose>

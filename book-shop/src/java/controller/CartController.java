@@ -11,10 +11,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
-import model.ItemDAO;
-import model.ItemDTO;
+import java.util.Map;
+import model.CartDTO;
+import model.OrderDAO;
 import model.UserDTO;
+import model.ProductDAO;
+import utils.CartCookieUtils;
 
 /**
  *
@@ -23,7 +25,8 @@ import model.UserDTO;
 @WebServlet(name = "CartController", urlPatterns = {"/CartController"})
 public class CartController extends HttpServlet {
 
-    ItemDAO idao = new ItemDAO();
+    OrderDAO odao = new OrderDAO();
+    ProductDAO pdao = new ProductDAO();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -33,10 +36,16 @@ public class CartController extends HttpServlet {
             String action = request.getParameter("action");
 
             if (action.equals("addToCart")) {
-                url = "";
+                url = handleAddToCart(request, response);
+
+            } else if (action.equals("updateQuantity")) {
+                url = handleUpdateQuantity(request, response);
+
+            } else if (action.equals("removeCart")) {
+                url = handleRemoveFromCart(request, response);
 
             } else if (action.equals("viewCart")) {
-                url = "";
+                url = handleViewCart(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -44,26 +53,77 @@ public class CartController extends HttpServlet {
         }
     }
 
-    /*private String handleCartAdding(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession();
-        UserDTO user = (UserDTO) session.getAttribute("user");
+    private String handleAddToCart(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            int productId = Integer.parseInt(request.getParameter("id"));
+            int quantity = Integer.parseInt(request.getParameter("qty"));
 
-        if (user == null) {
-            return "login.jsp";
+            // Lấy map từ request
+            Map<Integer, Integer> cartMap = CartCookieUtils.getCartMapFromRequest(request);
+
+            // Cập nhật map
+            cartMap.put(productId, cartMap.getOrDefault(productId, 0) + quantity);
+
+            // Cập nhật cookie
+            CartCookieUtils.updateCartCookie(response, cartMap);
+
+            // Tạo lại CartDTO từ cartMap vừa cập nhật
+            CartDTO cart = CartCookieUtils.buildCartFromMap(cartMap);
+            request.setAttribute("cartItems", cart.getListItems());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        int productId = Integer.parseInt(request.getParameter("id"));
-        int qty = Integer.parseInt(request.getParameter("qty"));
-
-        idao.addToCart(user.getUserName(), productId, qty);
-
-        List<ItemDTO> cartItems = idao.getCart(user.getUserName());
-        request.setAttribute("cartItems", cartItems);
 
         return "cart.jsp";
     }
 
-    private String handleCartViewing(HttpServletRequest request, HttpServletResponse response) {
+    private String handleViewCart(HttpServletRequest request, HttpServletResponse response) {
+        CartDTO cart = CartCookieUtils.getCartFromCookie(request);
+        request.setAttribute("cartItems", cart.getListItems());
+        return "cart.jsp";
+    }
+
+    private String handleRemoveFromCart(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            int productId = Integer.parseInt(request.getParameter("id"));
+            Map<Integer, Integer> cartMap = CartCookieUtils.getCartMapFromRequest(request);
+            cartMap.remove(productId);
+            CartCookieUtils.updateCartCookie(response, cartMap);
+
+            CartDTO cart = CartCookieUtils.buildCartFromMap(cartMap);
+            request.setAttribute("cartItems", cart.getListItems());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "cart.jsp";
+    }
+
+    private String handleUpdateQuantity(HttpServletRequest request, HttpServletResponse response) {
+        try {
+            int productId = Integer.parseInt(request.getParameter("id"));
+            int newQty = Integer.parseInt(request.getParameter("qty"));
+
+            Map<Integer, Integer> cartMap = CartCookieUtils.getCartMapFromRequest(request);
+            if (newQty <= 0) {
+                cartMap.remove(productId);
+            } else {
+                cartMap.put(productId, newQty);
+            }
+
+            CartCookieUtils.updateCartCookie(response, cartMap);
+            CartDTO cart = CartCookieUtils.buildCartFromMap(cartMap);
+            request.setAttribute("cartItems", cart.getListItems());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "cart.jsp";
+    }
+
+    private String handleCheckout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         UserDTO user = (UserDTO) session.getAttribute("user");
 
@@ -71,11 +131,23 @@ public class CartController extends HttpServlet {
             return "login.jsp";
         }
 
-        List<ItemDTO> cartItems = idao.getCart(user.getUserName());
-        request.setAttribute("cartItems", cartItems);
+        CartDTO cart = CartCookieUtils.getCartFromCookie(request);
+        if (cart == null || cart.getListItems().isEmpty()) {
+            request.setAttribute("message", "Cart is empty!");
+            return "cart.jsp";
+        }
 
-        return "cart.jsp";
-    }*/
+        boolean result = odao.addOrder(user, cart);
+
+        if (result) {
+            CartCookieUtils.clearCartCookie(response); // xoá cookie sau khi đặt hàng
+            request.setAttribute("message", "Order placed successfully!");
+            return "thankyou.jsp";
+        } else {
+            request.setAttribute("message", "Failed to place order.");
+            return "cart.jsp";
+        }
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

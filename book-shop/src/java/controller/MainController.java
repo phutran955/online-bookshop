@@ -52,6 +52,8 @@ public class MainController extends HttpServlet {
     
     private boolean isCartAction (String action) {
         return "addToCart".equals(action)
+                || "updateQuantity".equals(action)
+                ||"removeCart".equals(action)
                 || "viewCart".equals(action);
     }
 

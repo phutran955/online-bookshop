@@ -7,86 +7,93 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<c:set var="currentUser" value="${sessionScope.user}" />
-<c:set var="isLoggedIn" value="${not empty currentUser}" />
-
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>Cart</title>
-        <jsp:include page = "components/link.jsp"></jsp:include>
-    </head>
-    
-    <body>
-        <jsp:include page="components/header.jsp" />
+<head>
+    <title>Your Cart</title>
+    <jsp:include page="components/link.jsp"/>
+</head>
 
-        <div class="container my-5">
-            <h2 class="mb-4">🛒 Your Shopping Cart</h2>
+<body>
+<jsp:include page="components/header.jsp"/>
 
-            <c:choose>
-                <c:when test="${not isLoggedIn}">
-                    <c:redirect url="login.jsp"/>
-                </c:when>
+<div class="container my-5">
+    <h2 class="mb-4">🛒 Your Shopping Cart</h2>
 
-                <c:when test="${not empty cartItems}">
-                    <table class="table table-bordered text-center align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Image</th>
-                                <th>Book Title</th>
-                                <th>Unit Price</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        
-                        <tbody>
-                            <c:set var="totalAmount" value="0" />
-                            <c:forEach var="item" items="${cartItems}">
-                                <tr>
-                                    <td><img src="${item.product.image}" style="width: 80px;" alt="${item.product.name}"/></td>
-                                    <td>${item.product.name}</td>
-                                    <td>$<fmt:formatNumber value="${item.product.price}" type="number" maxFractionDigits="2"/></td>
-                                    <td>${item.quantity}</td>
-                                    <td>
-                                        <c:set var="lineTotal" value="${item.product.price * item.quantity}" />
-                                        $<fmt:formatNumber value="${lineTotal}" type="number" maxFractionDigits="2"/>
-                                        <c:set var="totalAmount" value="${totalAmount + lineTotal}" />
-                                    </td>
-                                    <td>
-                                        <form action="CartController" method="post" class="d-inline">
-                                            <input type="hidden" name="action" value="remove" />
-                                            <input type="hidden" name="id" value="${item.product.id}" />
-                                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <tr class="table-warning fw-bold">
-                                <td colspan="4" class="text-end">Total:</td>
-                                <td colspan="2">$<fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2"/></td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <c:choose>
+        <c:when test="${not empty cartItems}">
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Image</th>
+                        <th>Book Title</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:set var="totalAmount" value="0" />
+                    <c:forEach var="item" items="${cartItems}">
+                        <c:set var="unitPrice" value="${item.product.getSalePrice()}" />
+                        <c:set var="lineTotal" value="${unitPrice * item.quantity}" />
+                        <c:set var="totalAmount" value="${totalAmount + lineTotal}" />
 
-                    <div class="text-end">
-                        <a href="checkout.jsp" class="btn btn-success">Proceed to Checkout</a>
-                        <a href="MainController?action=viewAllProducts" class="btn btn-secondary">Continue Shopping</a>
-                    </div>
-                </c:when>
+                        <tr>
+                            <td><img src="${item.product.image}" style="width: 80px;" alt="${item.product.productName}" /></td>
+                            <td>${item.product.productName}</td>
+                            <td><fmt:formatNumber value="${unitPrice}" type="number" maxFractionDigits="2"/> đ</td>
 
-                <c:otherwise>
-                    <div class="alert alert-info text-center">
-                        Your cart is currently empty.
-                    </div>
-                    <div class="text-center">
-                        <a href="MainController?action=viewAllProducts" class="btn btn-primary">Browse Books</a>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
+                            <!-- Quantity Update Form -->
+                            <td>
+                                <form action="CartController" method="post" class="d-flex justify-content-center align-items-center">
+                                    <input type="hidden" name="action" value="updateQuantity" />
+                                    <input type="hidden" name="id" value="${item.product.productId}" />
+                                    <input type="number" name="qty" value="${item.quantity}" min="1" class="form-control form-control-sm me-2" style="width: 60px;" />
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                </form>
+                            </td>
 
-        <jsp:include page="components/footer.jsp" />
-    </body>
+                            <td><fmt:formatNumber value="${lineTotal}" type="number" maxFractionDigits="2"/> đ</td>
+
+                            <!-- Remove Item Form -->
+                            <td>
+                                <form action="CartController" method="post" class="d-inline">
+                                    <input type="hidden" name="action" value="removeCart" />
+                                    <input type="hidden" name="id" value="${item.product.productId}" />
+                                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </c:forEach>
+
+                    <tr class="table-warning fw-bold">
+                        <td colspan="4" class="text-end">Total:</td>
+                        <td colspan="2">
+                            <fmt:formatNumber value="${totalAmount}" type="number" maxFractionDigits="2"/> đ
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="text-end">
+                <a href="checkout.jsp" class="btn btn-success">Proceed to Checkout</a>
+                <a href="MainController?action=viewAllProducts" class="btn btn-secondary">Continue Shopping</a>
+            </div>
+        </c:when>
+
+        <c:otherwise>
+            <div class="alert alert-info text-center">
+                🛒 Your cart is currently empty.
+            </div>
+            <div class="text-center">
+                <a href="MainController?action=viewAllProducts" class="btn btn-primary">Browse Books</a>
+            </div>
+        </c:otherwise>
+    </c:choose>
+</div>
+
+<jsp:include page="components/footer.jsp"/>
+</body>
 </html>
