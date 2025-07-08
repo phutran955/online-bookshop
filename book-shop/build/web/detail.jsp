@@ -32,9 +32,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-center gap-3 w-100">
-                            <button class="btn btn-primary w-35">BUY NOW</button>
-
+                        <div class="d-flex justify-content-center gap-3 w-100">                          
                             <form action="MainController" method="get">
                                 <input type="hidden" name="action" value="addToCart">
                                 <input type="hidden" name="id" value="${p.productId}">

@@ -9,12 +9,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.ProductDAO;
-import model.CategoryDAO;
-import model.ProductDTO;
-import model.CategoryDTO;
 import java.io.IOException;
 import java.util.List;
+import model.CategoryDAO;
+import model.CategoryDTO;
+import model.ProductDAO;
+import model.ProductDTO;
 
 /**
  *
@@ -25,6 +25,8 @@ import java.util.List;
 public class MainController extends HttpServlet {
 
     private static final String WELCOME = "login.jsp";
+    ProductDAO pdao = new ProductDAO();
+    CategoryDAO cdao = new CategoryDAO();
 
     private boolean isUserAction(String action) {
         return "login".equals(action)
@@ -62,14 +64,11 @@ public class MainController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = WELCOME;
-        ProductDAO pdao = new ProductDAO();
-        CategoryDAO cdao = new CategoryDAO();
         try {
             String action = request.getParameter("action");
 
-            List<ProductDTO> listP = pdao.getAllActiveProducts();
+            List<ProductDTO> listP = pdao.get4NewestProducts();
             List<CategoryDTO> listC = cdao.getAllCategory();
-
             request.setAttribute("listP", listP);
             request.setAttribute("listC", listC);
             url = "index.jsp";
@@ -83,7 +82,6 @@ public class MainController extends HttpServlet {
             } else if (isCartAction(action)) {
                 url = "/CartController";
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

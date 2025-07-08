@@ -41,7 +41,7 @@
                                     <figure class="product-style">
                                         
                                         <a href="MainController?action=viewProduct&id=${p.productId}">
-                                            <img src="${p.image}" alt="${p.productName}" class="product-item" style="width:250px; height:320px; object-fit:cover;">
+                                            <img src="${p.image}" alt="${p.productName}" class="product-item">
                                         </a>
 
                                         <form action="MainController" method="get">

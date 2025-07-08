@@ -91,7 +91,7 @@ public class ProductDAO {
 
             if (rs.next()) {
                 product = new ProductDTO();
-                
+
                 product.setProductId(rs.getInt("ProductID"));
                 product.setProductName(rs.getString("ProductName"));
                 product.setAuthor(rs.getString("Author"));
@@ -113,7 +113,7 @@ public class ProductDAO {
 
         return product;
     }
-    
+
     public List<ProductDTO> getAllActiveProducts() {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
@@ -317,6 +317,106 @@ public class ProductDAO {
         return products;
     }
 
+    public List<ProductDTO> get4NewestProducts() {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT TOP 4 * FROM tblProducts WHERE Status = 1 ORDER BY ProductID DESC";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in get4NewestProducts(): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
+
+    public List<ProductDTO> getNext4NewestProducts(int lastSeenId) {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT TOP 4 * FROM tblProducts WHERE Status = 1 AND ProductID < ? ORDER BY ProductID DESC";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, lastSeenId); // load less than the last seen ProductID
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in getNext4NewestProducts(): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
 
     /* public boolean create(ProductDTO product) {
         boolean success = false;
