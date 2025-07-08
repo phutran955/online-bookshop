@@ -39,9 +39,11 @@
                             <div class="col-md-3 mb-4">
                                 <div class="product-item">
                                     <figure class="product-style">
+                                        
                                         <a href="MainController?action=viewProduct&id=${p.productId}">
-                                            <img src="${p.image}" alt="${p.productName}" class="product-item">
+                                            <img src="${p.image}" alt="${p.productName}" class="product-item" style="width:250px; height:320px; object-fit:cover;">
                                         </a>
+
                                         <form action="MainController" method="get">
                                             <input type="hidden" name="action" value="addToCart">
                                             <input type="hidden" name="id" value="${p.productId}">

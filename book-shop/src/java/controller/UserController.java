@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import model.UserDAO;
 import model.UserDTO;
+import utils.PasswordUtlis;
 
 /**
  *
@@ -58,7 +59,7 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         String username = request.getParameter("strUserName");
         String password = request.getParameter("strPassword");
-        
+        //password = PasswordUtlis.encryptSHA256(password);
         UserDAO userDAO = new UserDAO();
         
         if (userDAO.login(username, password)) {
@@ -79,10 +80,10 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         
         if (session != null) {
-            // Lấy thông tin người dùng từ session (nếu có)
+            // get session info
             UserDTO user = (UserDTO) session.getAttribute("user");
             if (user != null) {
-                // Ham huy bo tat ca noi dung trong session
+                // cancle all session
                 session.invalidate();
             }
         }

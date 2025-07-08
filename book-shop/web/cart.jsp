@@ -76,9 +76,8 @@
                     </tr>
                 </tbody>
             </table>
-
             <div class="text-end">
-                <a href="checkout.jsp" class="btn btn-success">Proceed to Checkout</a>
+                <a href="MainController?action=checkOut" class="btn btn-success">Proceed to Checkout</a>
                 <a href="MainController?action=viewAllProducts" class="btn btn-secondary">Continue Shopping</a>
             </div>
         </c:when>
@@ -91,9 +90,9 @@
                 <a href="MainController?action=viewAllProducts" class="btn btn-primary">Browse Books</a>
             </div>
         </c:otherwise>
+        
     </c:choose>
 </div>
-
 <jsp:include page="components/footer.jsp"/>
 </body>
 </html>

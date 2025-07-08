@@ -77,7 +77,7 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="main-logo">
-                        <a href="MainController?action=mc"><img src="assets/images/main-logo.png" alt="logo"></a>
+                        <a href="MainController"><img src="assets/images/main-logo.png" alt="logo"></a>
                     </div>
                 </div>
 
@@ -95,7 +95,7 @@
                                     </li>
                                 </c:if>
 
-                                <li class="menu-item"><a href="MainController?action=mc" class="nav-link">Home</a></li>
+                                <li class="menu-item"><a href="MainController" class="nav-link">Home</a></li>
                                 <li class="menu-item has-sub">
                                     <a href="#categories" class="nav-link">Categories</a>
                                     <ul>

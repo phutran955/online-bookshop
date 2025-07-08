@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @author trang
  */
-@WebServlet(name = "MainController", urlPatterns = {"", "/MainController", "/mc"})
+@WebServlet(name = "MainController", urlPatterns = {"/MainController", "/mc"})
 
 public class MainController extends HttpServlet {
 
@@ -49,12 +49,13 @@ public class MainController extends HttpServlet {
         return "viewCat".equals(action)
                 || "viewAllProducts".equals(action);
     }
-    
-    private boolean isCartAction (String action) {
+
+    private boolean isCartAction(String action) {
         return "addToCart".equals(action)
                 || "updateQuantity".equals(action)
-                ||"removeCart".equals(action)
-                || "viewCart".equals(action);
+                || "removeCart".equals(action)
+                || "viewCart".equals(action)
+                || "checkOut".equals(action);
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)

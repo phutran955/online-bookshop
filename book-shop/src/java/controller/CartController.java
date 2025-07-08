@@ -46,6 +46,9 @@ public class CartController extends HttpServlet {
 
             } else if (action.equals("viewCart")) {
                 url = handleViewCart(request, response);
+                
+            } else if (action.equals("checkOut")) {
+                url = handleCheckout(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -142,7 +145,7 @@ public class CartController extends HttpServlet {
         if (result) {
             CartCookieUtils.clearCartCookie(response); // xoá cookie sau khi đặt hàng
             request.setAttribute("message", "Order placed successfully!");
-            return "thankyou.jsp";
+            return "cart.jsp";
         } else {
             request.setAttribute("message", "Failed to place order.");
             return "cart.jsp";
