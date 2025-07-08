@@ -20,7 +20,7 @@ import model.ProductDTO;
  *
  * @author trang
  */
-@WebServlet(name = "MainController", urlPatterns = {"/MainController", "/mc"})
+@WebServlet(name = "MainController", urlPatterns = {"","/MainController", "/mc"})
 
 public class MainController extends HttpServlet {
 
@@ -44,7 +44,8 @@ public class MainController extends HttpServlet {
                 || "changeProductStatus".equals(action)
                 || "editProduct".equals(action)
                 || "updateProduct".equals(action)
-                || "viewProduct".equals(action);
+                || "viewProduct".equals(action)
+                || "pagingProduct".equals(action);
     }
 
     private boolean isCategoryAction(String action) {
@@ -68,8 +69,10 @@ public class MainController extends HttpServlet {
             String action = request.getParameter("action");
 
             List<ProductDTO> listP = pdao.get4NewestProducts();
+            List<ProductDTO> listAll = pdao.get4NewestProducts();
             List<CategoryDTO> listC = cdao.getAllCategory();
             request.setAttribute("listP", listP);
+            request.setAttribute("listAll", listAll);
             request.setAttribute("listC", listC);
             url = "index.jsp";
 

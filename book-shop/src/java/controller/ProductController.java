@@ -48,6 +48,9 @@ public class ProductController extends HttpServlet {
 
             } else if (action.equals("viewProduct")) {
                 url = handleViewProduct(request, response);
+                
+            } else if (action.equals("pagingProduct")) {
+                url = handleShowProducts(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -65,11 +68,36 @@ public class ProductController extends HttpServlet {
 
     private String handleProductSearching(HttpServletRequest request, HttpServletResponse response) {
         String keyword = request.getParameter("keyword");
-        List<ProductDTO> list = pdao.getProductsByName(keyword);
-        request.setAttribute("list", list);
+        List<ProductDTO> listByName = pdao.getProductsByName(keyword);
+        request.setAttribute("listP", listByName);
         request.setAttribute("keyword", keyword);
-        return "productEdit.jsp";
+        return "productsDisplay.jsp";
     }
+
+    private String handleShowProducts(HttpServletRequest request, HttpServletResponse response) {
+        final int PAGE_SIZE = 12;
+        int page = 1;
+
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                page = Integer.parseInt(pageParam);
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        List<ProductDTO> listP = pdao.getProductsByPage(page, PAGE_SIZE);
+        int totalProducts = pdao.countAllActiveProducts();
+        int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
+
+        request.setAttribute("listP", listP);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+
+        return "productsDisplay.jsp";
+    }
+
 
     /*private String handleProductStatusChanging(HttpServletRequest request, HttpServletResponse response) {
         String productId = request.getParameter("productId");
@@ -79,7 +107,6 @@ public class ProductController extends HttpServlet {
         }
         return handleProductSearching(request, response);
     }*/
-
     private String handleProductEditing(HttpServletRequest request, HttpServletResponse response) {
         String productId = request.getParameter("productId");
         String keyword = request.getParameter("keyword");
@@ -214,7 +241,6 @@ public class ProductController extends HttpServlet {
         }
         return "productForm.jsp";
     }*/
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

@@ -10,8 +10,11 @@
 <c:set var="currentUser" value="${sessionScope.user}" />
 <c:set var="isAdmin" value="${currentUser.roleID eq 'AD'}" />
 
-<div id="header-wrap">
+<c:set var="keyword" value="${requestScope.keyword}" />
+<c:set var="hasKeyword" value="${not empty keyword}" />
+<c:set var="keywordParam" value="${hasKeyword ? keyword : ''}" />
 
+<div id="header-wrap">
     <!-- 1st HEAD -->
     <div class="top-content">
         <div class="container-fluid">
@@ -52,6 +55,7 @@
                             </c:otherwise>
                         </c:choose>
 
+                        <!-- CART -->
                         <a href="MainController?action=viewCart" class="cart for-buy"><i class="icon icon-clipboard"></i><span>Cart</span></a>
 
                         <!-- SEARCH -->
@@ -60,11 +64,13 @@
                                 <a href="#" class="search-button search-toggle" data-selector="#header-wrap">
                                     <i class="icon icon-search"></i>
                                 </a>
-                                <form role="search" method="get" class="search-box">
-                                    <input class="search-field text search-input" placeholder="Search" type="search">
+                                <form role="search" method="get" class="search-box" action="MainController">
+                                    <input type="hidden" name="action" value="searchProduct">
+                                    <input class="search-field text search-input" name="keyword" value="${keywordParam}" placeholder="Search" type="search">
                                 </form>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -110,7 +116,7 @@
                                         </c:if>
                                     </ul>
                                 </li>
-                                <li class="menu-item"><a href="MainController?action=viewAllProducts" class="nav-link">View All Products</a></li>
+                                <li class="menu-item"><a href="MainController?action=pagingProduct" class="nav-link">View All Products</a></li>
                             </ul>
 
                             <div class="hamburger">

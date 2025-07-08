@@ -418,6 +418,82 @@ public class ProductDAO {
         return products;
     }
 
+    public List<ProductDTO> getProductsByPage(int page, int pageSize) {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM tblProducts WHERE Status = 1 "
+                + "ORDER BY ProductID "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
+
+    public int countAllActiveProducts() {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT COUNT(*) FROM tblProducts WHERE Status = 1";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return count;
+    }
+
     /* public boolean create(ProductDTO product) {
         boolean success = false;
         Connection conn = null;

@@ -62,6 +62,7 @@
                             <table class="table table-bordered table-sm mt-3">
                                 <tbody>
                                     <tr><th scope ="row">Id</th><td>${p.productId}</td></tr>
+                                    <tr><th scope ="row">Release Date</th><td>${p.releaseDate}</td></tr>
                                     <tr><th scope="row">Supplier</th><td>IPM</td></tr>
                                     <tr><th scope="row">Author</th><td>${p.author}</td></tr>
                                 </tbody>
