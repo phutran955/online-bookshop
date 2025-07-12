@@ -21,7 +21,7 @@
 
                 <ul class="category-list">
                     <li><a href="#" class="action-link default active" data-controller="UserController" data-action="viewUsers">Users</a></li>
-                    <li><a href="#" class="action-link" data-controller="MainController" data-action="listWallet">Wallets</a></li>
+                    <li><a href="#" class="action-link" data-controller="WalletController" data-action="viewWallets">Wallets</a></li>
                     <li><a href="#" class="action-link" data-controller="ProductController"data-action="viewProducts">Products</a></li>
                     <li><a href="#" class="action-link" data-controller="CartController" data-action="viewAllOrders">Orders</a></li>
                     <li><a href="#" class="action-link" data-controller="SupplierController" data-action="viewSuppliers">Suppliers</a></li>
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="assets/js02/admin.js" type="text/javascript"></script>
     </body>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/js02/admin.js" type="text/javascript"></script>
 </html>

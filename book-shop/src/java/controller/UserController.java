@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.sql.Date;
 import model.UserDAO;
 import model.UserDTO;
 import java.util.List;
@@ -53,7 +54,14 @@ public class UserController extends HttpServlet {
 
             } else if ("changeUserStatus".equals(action)) {
                 url = handleChangeUserStatus(request, response);
-            } else {
+                
+                
+            } else if("register".equals(action)) {
+                url = handleRegister(request, response);
+            }
+            
+            
+            else {
                 request.setAttribute("message", "Invalid action: " + action);
                 url = LOGIN_PAGE;
             }
@@ -61,6 +69,61 @@ public class UserController extends HttpServlet {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
+    }
+    
+     private String handleRegister(HttpServletRequest request, HttpServletResponse response) {
+        String checkError = "";
+        String message = "";
+        String userName = request.getParameter("userName");
+        String fullName = request.getParameter("fullName");
+        String password = request.getParameter("password");
+        String email = request.getParameter("email");
+        String birthDay = request.getParameter("birthDay");
+        String address = request.getParameter("address");
+        String phone = request.getParameter("phone");
+
+        if (userName == null || userName.trim().isEmpty()) {
+            checkError += "<br/>Username is required.";
+        }
+
+        if (fullName == null || fullName.trim().isEmpty()) {
+            checkError += "<br/>Full Name is required.";
+        }
+
+        if (password == null || password.trim().isEmpty()) {
+            checkError += "<br/>Password is required.";
+        }
+
+        Date BirthDay = null;
+        try {
+            if (birthDay != null && !birthDay.isEmpty()) {
+                BirthDay = Date.valueOf(birthDay); 
+
+                
+                Date today = new Date(System.currentTimeMillis());
+                if (BirthDay.after(today)) {
+                    checkError += "<br/> Birth Day must be in the past.";
+                }
+            }
+        } catch (Exception e) {
+            checkError += "<br/> Invalid Birth Day.";
+        }
+        
+        UserDTO user = new UserDTO(userName, fullName, password, phone, email, BirthDay, address, phone, true);
+        
+        if (checkError.isEmpty()) {
+            if (udao.createUserWithWallet(user)) {
+                message = "Create Account successfully.";
+            } else {
+                checkError += "Cannot Create Account.";
+            }
+        }
+
+            request.setAttribute("user", user);
+            request.setAttribute("checkError", checkError);
+            request.setAttribute("message", message);
+
+        return "update.jsp";
     }
 
     private String handleLogin(HttpServletRequest request, HttpServletResponse response) {
@@ -73,13 +136,11 @@ public class UserController extends HttpServlet {
         //password = PasswordUtlis.encryptSHA256(password);
 
         if (udao.login(username, password)) {
-            // Dang nhap thanh cong
-            url = "index.jsp";
+            url = "index.jsp"; //success
             UserDTO user = udao.getUserByUserName(username);
             session.setAttribute("user", user);
         } else {
-            // Dang nhap that bai
-            url = "login.jsp";
+            url = "login.jsp"; //fail
             request.setAttribute("message", "UserName or Password incorrect!");
         }
         return url;
@@ -100,9 +161,9 @@ public class UserController extends HttpServlet {
         return LOGIN_PAGE;
     }
 
-    private String handleRegister(HttpServletRequest request, HttpServletResponse response) {
+    /*private String handleRegister(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    }*/
 
     private String handleUpdateProfile(HttpServletRequest request, HttpServletResponse response) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody

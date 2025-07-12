@@ -98,7 +98,7 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="assets/js02/cart.js" type="text/javascript"></script>
     </body>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="assets/js02/cart.js" type="text/javascript"></script>
 </html>
