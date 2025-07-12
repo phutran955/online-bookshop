@@ -19,18 +19,18 @@ public class CategoryDAO {
 
     // SQL Queries
     private static final String GET_ALL_CATEGORY = "SELECT * FROM tblCategories";
-
+    
     public List<CategoryDTO> getAllCategory() {
         List<CategoryDTO> categories = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-
+        
         try {
             conn = DbUtils.getConnection();
             ps = conn.prepareStatement(GET_ALL_CATEGORY);
             rs = ps.executeQuery();
-
+            
             while (rs.next()) {
                 CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(rs.getInt("categoryId"));
@@ -43,10 +43,39 @@ public class CategoryDAO {
         } finally {
             closeResources(conn, ps, rs);
         }
-
+        
         return categories;
     }
-
+    
+    public CategoryDTO getCategoryByID(int id) {
+        CategoryDTO category = null;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        String sql = "SELECT CategoryID, CategoryName FROM tblCategories WHERE CategoryID = ?";
+        
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                category = new CategoryDTO(
+                        rs.getInt("CategoryID"),
+                        rs.getString("CategoryName")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+        
+        return category;
+    }
+    
     private void closeResources(Connection conn, PreparedStatement ps, ResultSet rs) {
         try {
             if (rs != null) {

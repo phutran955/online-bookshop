@@ -14,13 +14,13 @@
 <html lang="en">
 
     <head>
-        <title>BookSaw</title>
+        <title>Book</title>
         <jsp:include page = "components/link.jsp"></jsp:include>
             <link rel="stylesheet" href="assets/css02/index.css">
         </head>
+    <jsp:include page = "components/header.jsp"></jsp:include>
 
         <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
-        <jsp:include page = "components/header.jsp"></jsp:include>
 
             <!-- Banner -->
             <section id="promo-banner">
@@ -54,7 +54,7 @@
                                                         <a href="MainController?action=viewProduct&id=${p.productId}">
                                                             <img src="${p.image}" alt="${p.productName}" class="product-item">
                                                         </a>
-                                                        <form action="MainController" method="get">
+                                                        <form action="MainController" method="post">
                                                             <input type="hidden" name="action" value="addToCart">
                                                             <input type="hidden" name="id" value="${p.productId}">
                                                             <input type="hidden" name="qty" value="1">
@@ -81,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-                    
+
                 <div class="row mt-4">
                     <div class="col-md-12">
                         <div class="btn-wrap align-right">
@@ -122,7 +122,7 @@
                                                         <a href="MainController?action=viewProduct&id=${a.productId}">
                                                             <img src="${a.image}" alt="${a.productName}" class="product-item">
                                                         </a>
-                                                        <form action="MainController" method="get">
+                                                        <form action="MainController" method="post">
                                                             <input type="hidden" name="action" value="addToCart">
                                                             <input type="hidden" name="id" value="${a.productId}">
                                                             <input type="hidden" name="qty" value="1">
@@ -151,8 +151,27 @@
                 </div>
             </div>
         </section>
-        <jsp:include page = "components/footer.jsp"></jsp:include>
+
+        <!-- Supplier -->
+        <section id="client-holder" data-aos="fade-up">
+            <div class="container">
+                <div class="row">
+                    <div class="inner-content">
+                        <div class="logo-wrap">                          
+                            <a href="#"><img src="assets/images/nha-nam.jpg" alt="client"></a>
+                            <a href="#"><img src="assets/images/1684228751504-302190308_518846693577459_8520505824099127948_n.jpg" alt="client"></a>
+                            <a href="#"><img src="assets/images/OIP.jpg" alt="client"></a>
+                            <a href="#"><img src="assets/images/82_1598518883.jpg" alt="client"></a>                     
+                            <a href="#"><img src="assets/images/logo_mascot_200px.jpg" alt="client"></a>
+                            <a href="#"><img src="assets/images/nha-xuat-ban-kim-dong-115204.jpg" alt="client"></a>                                                     
+                            <a href="#"><img src="assets/images/1702888891128-Logo-chính-xác.jpg" alt="client"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </body>
+    <jsp:include page = "components/footer.jsp"></jsp:include>
     <script>
         let loadCount = 0;
 

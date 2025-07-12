@@ -41,7 +41,7 @@
                     <div class="right-element">
                         <c:choose>
                             <c:when test="${not empty sessionScope.user}">
-                                <a href="user-account.jsp" class="user-account for-buy">  
+                                <a href="userAccount.jsp" class="user-account for-buy">  
                                     <i class="icon icon-user"></i><span>${sessionScope.user.fullName}</span>
                                 </a>
                                 <a href="MainController?action=logout" class="logout for-buy">
@@ -83,7 +83,7 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="main-logo">
-                        <a href="MainController"><img src="assets/images/main-logo.png" alt="logo"></a>
+                        <a href="MainController?action=home"><img src="assets/images/main-logo.png" alt="logo"></a>
                     </div>
                 </div>
 
@@ -92,16 +92,14 @@
                         <div class="main-menu stellarnav">
                             <ul class="menu-list">
 
+                                <li class="menu-item"><a href="MainController?action=home" class="nav-link">Home</a></li>
+
                                 <c:if test="${isAdmin}">
-                                    <li class="menu-item has-sub">
-                                        <a href="#pages" class="nav-link">Admin</a>
-                                        <ul>                                       
-                                            <li><a href="productEdit.jsp">Products</a></li>                                        
-                                        </ul>
-                                    </li>
+                                    <li class="menu-item"><a href="admin.jsp" class="nav-link">Admin</a></li>
                                 </c:if>
 
-                                <li class="menu-item"><a href="MainController" class="nav-link">Home</a></li>
+                                <li class="menu-item"><a href="MainController?action=home" class="nav-link">Profile</a></li>
+
                                 <li class="menu-item has-sub">
                                     <a href="#categories" class="nav-link">Categories</a>
                                     <ul>

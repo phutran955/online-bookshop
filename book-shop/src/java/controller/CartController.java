@@ -11,11 +11,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Map;
 import model.CartDTO;
+import model.ItemDTO;
 import model.OrderDAO;
+import model.OrderDTO;
 import model.UserDTO;
 import model.ProductDAO;
+import model.ProductDTO;
+import utils.AuthUtils;
 import utils.CartCookieUtils;
 
 /**
@@ -35,7 +40,16 @@ public class CartController extends HttpServlet {
         try {
             String action = request.getParameter("action");
 
-            if (action.equals("addToCart")) {
+            if ("viewAllOrders".equals(action)) {
+                url = handleViewAllOrders(request, response);
+
+            } else if ("searchOrders".equals(action)) {
+                url = handleOrdesrSearching(request, response);
+
+            } else if ("changeOrderStatus".equals(action)) {
+                url = handleChangeOrderStatus(request, response);
+
+            } else if (action.equals("addToCart")) {
                 url = handleAddToCart(request, response);
 
             } else if (action.equals("updateQuantity")) {
@@ -46,7 +60,7 @@ public class CartController extends HttpServlet {
 
             } else if (action.equals("viewCart")) {
                 url = handleViewCart(request, response);
-                
+
             } else if (action.equals("checkOut")) {
                 url = handleCheckout(request, response);
             }
@@ -56,6 +70,37 @@ public class CartController extends HttpServlet {
         }
     }
 
+    private String handleViewAllOrders(HttpServletRequest request, HttpServletResponse response) {
+        if (AuthUtils.isAdmin(request)) {
+            List<OrderDTO> orders = odao.getAllOrders();
+            request.setAttribute("list", orders);
+        }
+        return "manageOrders.jsp";
+    }
+
+    private String handleOrdesrSearching(HttpServletRequest request, HttpServletResponse response) {
+        if (AuthUtils.isAdmin(request)) {
+            String keyword = request.getParameter("keyword");
+            List<OrderDTO> orderByName = odao.getOrdersByUserName(keyword);
+            request.setAttribute("list", orderByName);
+            request.setAttribute("keyword", keyword);
+        }
+        return "userOrders.jsp";
+    }
+
+    private String handleChangeOrderStatus(HttpServletRequest request, HttpServletResponse response) {
+        if (AuthUtils.isAdmin(request)) {
+            String id = request.getParameter("orderId");
+            String keyword = request.getParameter("keyword");
+            int id_value = Integer.parseInt(id);
+
+            boolean updated = odao.changeOrderStatus(id_value, true);
+            System.out.println("Status update success? " + updated); // ✅ debug log
+        }
+        return handleOrdesrSearching(request, response);
+    }
+
+//Cookie
     private String handleAddToCart(HttpServletRequest request, HttpServletResponse response) {
         try {
             int productId = Integer.parseInt(request.getParameter("id"));
@@ -78,7 +123,7 @@ public class CartController extends HttpServlet {
             e.printStackTrace();
         }
 
-        return "cart.jsp";
+        return handleViewCart(request, response);
     }
 
     private String handleViewCart(HttpServletRequest request, HttpServletResponse response) {
@@ -130,26 +175,59 @@ public class CartController extends HttpServlet {
         HttpSession session = request.getSession();
         UserDTO user = (UserDTO) session.getAttribute("user");
 
+        // 1. Require login
         if (user == null) {
             return "login.jsp";
         }
 
+        // 2. Get cart from cookie
         CartDTO cart = CartCookieUtils.getCartFromCookie(request);
         if (cart == null || cart.getListItems().isEmpty()) {
             request.setAttribute("message", "Cart is empty!");
             return "cart.jsp";
         }
 
-        boolean result = odao.addOrder(user, cart);
+        // 3. Check stock availability for all items
+        for (ItemDTO item : cart.getListItems()) {
+            int productId = item.getProduct().getProductId();
+            int quantityInCart = item.getQuantity();
 
-        if (result) {
-            CartCookieUtils.clearCartCookie(response); // xoá cookie sau khi đặt hàng
-            request.setAttribute("message", "Order placed successfully!");
-            return "cart.jsp";
-        } else {
+            ProductDTO product = pdao.getProductByID(productId);
+            if (product == null) {
+                request.setAttribute("message", "Product not found: ID " + productId);
+                return "cart.jsp";
+            }
+
+            if (quantityInCart > product.getUnitsInStock()) {
+                request.setAttribute("message", "Not enough stock for: " + product.getProductName());
+                return "cart.jsp";
+            }
+        }
+
+        // 4. Place the order
+        boolean orderPlaced = odao.addOrder(user, cart);
+        if (!orderPlaced) {
             request.setAttribute("message", "Failed to place order.");
             return "cart.jsp";
         }
+
+        // 5. Update stock and quantity sold after successful order
+        for (ItemDTO item : cart.getListItems()) {
+            int productId = item.getProduct().getProductId();
+            int quantity = item.getQuantity();
+
+            ProductDTO product = pdao.getProductByID(productId);
+            if (product != null) {
+                int newStock = product.getUnitsInStock() - quantity;
+                pdao.updateStock(productId, newStock);
+                pdao.increaseQuantitySold(productId, quantity);
+            }
+        }
+
+        // 6. Clear cart cookie and return success message
+        CartCookieUtils.clearCartCookie(response);
+        request.setAttribute("message", "Order placed successfully!");
+        return "cart.jsp";
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

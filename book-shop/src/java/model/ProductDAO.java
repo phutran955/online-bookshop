@@ -23,9 +23,13 @@ public class ProductDAO {
             + "ReleaseDate, Discount, Status "
             + "FROM tblProducts";
 
-    private static final String CREATE_PRODUCT = "INSERT INTO tblProducts (name, image, description, price, catID, status, author) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    private static final String UPDATE_PRODUCT = "UPDATE tblProducts SET name = ?, image=?, description = ?, price = ?, catID = ?, status = ?, author = ? WHERE id = ?";
-    private static final String DELETE_PRODUCT = "DELETE FROM tblProducts WHERE id = ?";
+    private static final String CREATE_PRODUCT = "INSERT INTO tblProducts (ProductName, Author, SupplierID, CategoryID, UnitPrice, UnitsInStock, "
+            + "Image, Description, ReleaseDate, Discount, Status) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    private static final String UPDATE_PRODUCT = "UPDATE tblProducts SET ProductName = ?, Author = ?, SupplierID = ?, CategoryID = ?, "
+            + "UnitPrice = ?, UnitsInStock = ?, Image = ?, Description = ?, "
+            + "ReleaseDate = ?, Discount = ?, Status = ? WHERE ProductID = ?";
 
     public List<ProductDTO> getAll() {
         List<ProductDTO> products = new ArrayList<>();
@@ -103,6 +107,17 @@ public class ProductDAO {
                 product.setReleaseDate(rs.getDate("ReleaseDate"));
                 product.setDiscount(rs.getDouble("Discount"));
                 product.setStatus(rs.getBoolean("Status"));
+                
+                int catID = rs.getInt("CategoryID");
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
+
             }
         } catch (Exception e) {
             System.err.println("Error in getProductByID(): " + e.getMessage());
@@ -494,7 +509,45 @@ public class ProductDAO {
         return count;
     }
 
-    /* public boolean create(ProductDTO product) {
+    public boolean updateStock(int productId, int newStock) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        String sql = "UPDATE tblProducts SET UnitsInStock = ? WHERE ProductID = ?";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, newStock);
+            ps.setInt(2, productId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, null);
+        }
+        return false;
+    }
+
+    public boolean increaseQuantitySold(int productId, int amount) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        String sql = "UPDATE tblProducts SET QuantitySold = ISNULL(QuantitySold, 0) + ? WHERE ProductID = ?";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, amount);
+            ps.setInt(2, productId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, null);
+        }
+        return false;
+    }
+
+    public boolean create(ProductDTO product) {
         boolean success = false;
         Connection conn = null;
         PreparedStatement ps = null;
@@ -503,13 +556,17 @@ public class ProductDAO {
             conn = DbUtils.getConnection();
             ps = conn.prepareStatement(CREATE_PRODUCT);
 
-            ps.setString(1, product.getName());
-            ps.setString(2, product.getImage());
-            ps.setString(3, product.getDescription());
-            ps.setDouble(4, product.getPrice());
-            ps.setInt(5, product.getCatID());
-            ps.setBoolean(6, product.isStatus());
-            ps.setString(7, product.getAuthor());
+            ps.setString(1, product.getProductName());
+            ps.setString(2, product.getAuthor());
+            ps.setInt(3, product.getSupplier().getSupplierId());
+            ps.setInt(4, product.getCategory().getCategoryId());
+            ps.setDouble(5, product.getUnitPrice());
+            ps.setInt(6, product.getUnitsInStock());
+            ps.setString(7, product.getImage());
+            ps.setString(8, product.getDescription());
+            ps.setDate(9, product.getReleaseDate());
+            ps.setDouble(10, product.getDiscount());
+            ps.setBoolean(11, product.isStatus());
 
             int rowsAffected = ps.executeUpdate();
             success = (rowsAffected > 0);
@@ -533,14 +590,18 @@ public class ProductDAO {
             conn = DbUtils.getConnection();
             ps = conn.prepareStatement(UPDATE_PRODUCT);
 
-            ps.setString(1, product.getName());
-            ps.setString(2, product.getImage());
-            ps.setString(3, product.getDescription());
-            ps.setDouble(4, product.getPrice());
-            ps.setInt(5, product.getCatID());
-            ps.setBoolean(6, product.isStatus());
-            ps.setString(7, product.getAuthor());
-            ps.setInt(8, product.getId()); // WHERE condition
+            ps.setString(1, product.getProductName());
+            ps.setString(2, product.getAuthor());
+            ps.setInt(3, product.getSupplier().getSupplierId());
+            ps.setInt(4, product.getCategory().getCategoryId());
+            ps.setDouble(5, product.getUnitPrice());
+            ps.setInt(6, product.getUnitsInStock());
+            ps.setString(7, product.getImage());
+            ps.setString(8, product.getDescription());
+            ps.setDate(9, product.getReleaseDate());
+            ps.setDouble(10, product.getDiscount());
+            ps.setBoolean(11, product.isStatus());
+            ps.setInt(12, product.getProductId()); //condition
 
             int rowsAffected = ps.executeUpdate();
             success = (rowsAffected > 0);
@@ -556,15 +617,29 @@ public class ProductDAO {
     }
 
     public boolean updateStatus(int productId, boolean status) {
-        ProductDTO product = getProductByID(productId);
-        if (product != null) {
-            product.setStatus(status);
-            return update(product);
+        String sql = "UPDATE tblProducts SET Status = ? WHERE ProductID = ?";
+        boolean success = false;
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setBoolean(1, status);
+            ps.setInt(2, productId);
+
+            success = ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, null);
         }
-        return false;
+
+        return success;
     }
 
-    public boolean delete(String id) {
+
+    /*public boolean delete(String id) {
         boolean success = false;
         Connection conn = null;
         PreparedStatement ps = null;

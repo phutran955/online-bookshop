@@ -9,7 +9,8 @@ package model;
  * @author trang
  */
 public class SupplierDTO {
-     private int supplierId;
+
+    private int supplierId;
     private String companyName;
     private String contactName;
     private String country;
@@ -84,5 +85,4 @@ public class SupplierDTO {
         this.homePage = homePage;
     }
 
-   
 }

@@ -14,12 +14,10 @@
         <title>Detail</title>
         <jsp:include page = "components/link.jsp"></jsp:include>
         <link rel="stylesheet" href="assets/css02/detail.css"> 
-    </head>
+    </head>  
+     <jsp:include page = "components/header.jsp"></jsp:include>
 
     <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
-
-        <jsp:include page = "components/header.jsp"></jsp:include>
-
             <section class="product-detail-container py-4">
                 <div class="container">
                     <div class="row">

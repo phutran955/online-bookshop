@@ -21,6 +21,101 @@ import utils.DbUtils;
  */
 public class OrderDAO {
 
+    UserDTO user = new UserDTO();
+
+    public List<OrderDTO> getAllOrders() {
+        List<OrderDTO> orders = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM tblOrders";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                OrderDTO order = new OrderDTO();
+                order.setOrderId(rs.getInt("OrderID"));
+                order.setDate(rs.getDate("Date"));
+                order.setStatus(rs.getBoolean("Status"));
+
+                order.setTotalMoney(rs.getDouble("TotalMoney"));
+
+
+                String userName = rs.getString("UserName");
+                user.setUserName(userName);
+                order.setUser(user);
+
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return orders;
+    }
+
+    public List<OrderDTO> getOrdersByUserName(String userName) {
+        List<OrderDTO> orders = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM tblOrders WHERE UserName = ?";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, userName);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                OrderDTO order = new OrderDTO();
+                order.setOrderId(rs.getInt("OrderID"));
+                order.setDate(rs.getDate("Date"));
+                order.setStatus(rs.getBoolean("Status"));
+                order.setTotalMoney(rs.getDouble("TotalMoney"));
+
+                String username = rs.getString("UserName");
+                user.setUserName(userName);
+                order.setUser(user);
+
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return orders;
+    }
+
+    public boolean changeOrderStatus(int orderId, boolean newStatus) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        String sql = "UPDATE tblOrders SET Status = ? WHERE OrderID = ?";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setBoolean(1, newStatus);
+            ps.setInt(2, orderId);
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, null);
+        }
+
+        return false;
+    }
+
+//Cookie list
     public boolean addOrder(UserDTO user, CartDTO cart) {
         boolean success = false;
         Connection conn = null;
@@ -82,7 +177,7 @@ public class OrderDAO {
         } finally {
             closeResources(conn, ps, rs);
         }
-        
+
         return success;
     }
 
@@ -107,7 +202,7 @@ public class OrderDAO {
             }
 
             if (orderId == -1) {
-                return cart; 
+                return cart;
             }
 
             String sql = "SELECT d.ProductID, d.Quantity, d.UnitPrice, d.Discount, "
@@ -143,40 +238,6 @@ public class OrderDAO {
         return cart;
     }
 
-    /*public boolean updateQuantity(String username, int productId, int quantity) {
-        boolean success = false;
-        Connection conn = null;
-        PreparedStatement ps = null;
-
-        String sql = "IF EXISTS (SELECT * FROM tblCartItems WHERE username = ? AND productId = ?) "
-                + "BEGIN UPDATE tblCartItems SET quantity = quantity + ? WHERE username = ? AND productId = ? END "
-                + "ELSE BEGIN INSERT INTO tblCartItems (username, productId, quantity) VALUES (?, ?, ?) END";
-        try {
-            conn = DbUtils.getConnection();
-            ps = conn.prepareStatement(sql);
-
-            ps.setString(1, username);
-            ps.setInt(2, productId);
-            ps.setInt(3, quantity);
-            ps.setString(4, username);
-            ps.setInt(5, productId);
-            ps.setString(6, username);
-            ps.setInt(7, productId);
-            ps.setInt(8, quantity);
-
-            int rowsAffected = ps.executeUpdate();
-            success = (rowsAffected > 0);
-
-        } catch (Exception e) {
-            System.err.println("Error in addToCart():  " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, ps, null);
-        }
-
-        return success;
-    }*/
-    
     private void closeResources(Connection conn, PreparedStatement ps, ResultSet rs) {
         try {
             if (rs != null) {

@@ -9,14 +9,13 @@
         <jsp:include page="components/link.jsp" />
         <link rel="stylesheet" href="assets/css02/display.css">
     </head>
-    
-    <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
-        <jsp:include page="components/header.jsp" />
+    <jsp:include page="components/header.jsp" />
 
+    <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
         <section class="main-wrapper my-5">
+
             <!-- Left: Category List + Price Filter -->
             <div class="category-box">
-                <h5>Categories</h5>
                 <ul>
                     <c:if test="${not empty listC}">
                         <c:forEach var="c" items="${listC}">
@@ -28,46 +27,9 @@
                         </c:forEach>
                     </c:if>
                 </ul>
-
-                <!-- Price Filter -->
-                <div class="price-filter mt-4">
-                    <form action="MainController" method="get">
-                        <input type="hidden" name="action" value="filterByPrice" />
-
-                        <h5>Price</h5>
-
-                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <input type="checkbox" name="price" value="0-150000" style="margin-right: 8px;">
-                            <label>0đ - 150,000đ</label>
-                        </div>
-
-                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <input type="checkbox" name="price" value="150000-300000" style="margin-right: 8px;">
-                            <label>150,000đ - 300,000đ</label>
-                        </div>
-
-                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <input type="checkbox" name="price" value="300000-500000" style="margin-right: 8px;">
-                            <label>300,000đ - 500,000đ</label>
-                        </div>
-
-                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                            <input type="checkbox" name="price" value="500000-700000" style="margin-right: 8px;">
-                            <label>500,000đ - 700,000đ</label>
-                        </div>
-
-                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <input type="checkbox" name="price" value="700000+" style="margin-right: 8px;">
-                            <label>700,000đ - Trở lên</label>
-                        </div>
-
-                        <button type="submit" class="btn btn-dark w-100">Filter</button>
-                    </form>
-                </div>
-
             </div>
 
-            <!-- Right: Product List -->
+            <!-- Product List -->
             <div class="product-box">
                 <div class="row">
                     <c:if test="${not empty listP}">
@@ -78,7 +40,7 @@
                                         <a href="MainController?action=viewProduct&id=${p.productId}">
                                             <img src="${p.image}" alt="${p.productName}" class="product-item">
                                         </a>
-                                        <form action="MainController" method="get">
+                                        <form action="MainController" method="post">
                                             <input type="hidden" name="action" value="addToCart">
                                             <input type="hidden" name="id" value="${p.productId}">
                                             <input type="hidden" name="qty" value="1">

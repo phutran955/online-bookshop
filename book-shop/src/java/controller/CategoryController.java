@@ -37,11 +37,23 @@ public class CategoryController extends HttpServlet {
 
             } else if (action.equals("viewAllProducts")) {
                 url = handleViewAllProducts(request, response);
+            } else if (action.equals("home")) {
+                url = handleHome(request, response);
             }
         } catch (Exception e) {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
+    }
+
+    private String handleHome(HttpServletRequest request, HttpServletResponse response) {
+        List<ProductDTO> listP = pdao.get4NewestProducts();
+        List<ProductDTO> listAll = pdao.get4NewestProducts();
+        List<CategoryDTO> listC = cdao.getAllCategory();
+        request.setAttribute("listP", listP);
+        request.setAttribute("listAll", listAll);
+        request.setAttribute("listC", listC);
+        return "index.jsp";
     }
 
     private String handleViewCat(HttpServletRequest request, HttpServletResponse response) {

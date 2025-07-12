@@ -11,19 +11,30 @@ import java.util.Date;
  * @author trang
  */
 public class OrderDTO {
+
     private UserDTO user;
     private int orderId;
     private Date date;
+    private double totalMoney;
     private boolean status;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(UserDTO user, int orderId, Date date, boolean status) {
+    public OrderDTO(UserDTO user, int orderId, Date date, double totalMoney, boolean status) {
         this.user = user;
         this.orderId = orderId;
         this.date = date;
+        this.totalMoney = totalMoney;
         this.status = status;
+    }
+
+    public double getTotalMoney() {
+        return totalMoney;
+    }
+
+    public void setTotalMoney(double totalMoney) {
+        this.totalMoney = totalMoney;
     }
 
     public UserDTO getUser() {
@@ -57,6 +68,5 @@ public class OrderDTO {
     public void setStatus(boolean status) {
         this.status = status;
     }
-
 
 }

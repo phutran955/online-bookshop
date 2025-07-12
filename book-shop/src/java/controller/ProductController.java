@@ -10,16 +10,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.sql.Date;
 import java.util.List;
+import model.CategoryDTO;
 import model.ProductDAO;
 import model.ProductDTO;
+import model.SupplierDTO;
 import utils.AuthUtils;
 
 /**
  *
  * @author trang
  */
-@WebServlet(name = "ProductController", urlPatterns = {"/ProductController"})
+@WebServlet(name = "ProductController", urlPatterns = {"/ProductController", "/pc"})
 public class ProductController extends HttpServlet {
 
     ProductDAO pdao = new ProductDAO();
@@ -31,26 +34,33 @@ public class ProductController extends HttpServlet {
         try {
             String action = request.getParameter("action");
 
-            if (action.equals("addProduct")) {
-                url = "";
+            if (action.equals("viewProduct")) {
+                url = handleViewSingleProduct(request, response);
 
             } else if (action.equals("searchProduct")) {
                 url = handleProductSearching(request, response);
 
-            } else if (action.equals("changeProductStatus")) {
-                url = "";
+            } else if (action.equals("pagingProduct")) {
+                url = handleShowProductsByPaging(request, response);
+
+            //Admin
+            } else if (action.equals("viewProducts")) {
+                url = handleviewActiveProducts(request, response);
+
+            } else if (action.equals("addProduct")) {
+                url = handleProductAdding(request, response);
+
+            } else if (action.equals("updateProduct")) {
+                url = handleProductUpdating(request, response);
 
             } else if (action.equals("editProduct")) {
                 url = handleProductEditing(request, response);
 
-            } else if (action.equals("updateProduct")) {
-                url = "";
+            } else if (action.equals("changeProductStatus")) {
+                url = handleProductStatusChanging(request, response);
 
-            } else if (action.equals("viewProduct")) {
-                url = handleViewProduct(request, response);
-                
-            } else if (action.equals("pagingProduct")) {
-                url = handleShowProducts(request, response);
+            } else if (action.equals("adminSearch")) {
+                url = handleAdminProductSearching(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -58,7 +68,7 @@ public class ProductController extends HttpServlet {
         }
     }
 
-    private String handleViewProduct(HttpServletRequest request, HttpServletResponse response) {
+    private String handleViewSingleProduct(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("id");
         int id_value = Integer.parseInt(id);
         ProductDTO oneP = pdao.getProductByID(id_value);
@@ -74,7 +84,7 @@ public class ProductController extends HttpServlet {
         return "productsDisplay.jsp";
     }
 
-    private String handleShowProducts(HttpServletRequest request, HttpServletResponse response) {
+    private String handleShowProductsByPaging(HttpServletRequest request, HttpServletResponse response) {
         final int PAGE_SIZE = 12;
         int page = 1;
 
@@ -98,83 +108,49 @@ public class ProductController extends HttpServlet {
         return "productsDisplay.jsp";
     }
 
-
-    /*private String handleProductStatusChanging(HttpServletRequest request, HttpServletResponse response) {
-        String productId = request.getParameter("productId");
-        int id_value = Integer.parseInt(productId);
+    //Admin
+    private String handleviewActiveProducts(HttpServletRequest request, HttpServletResponse response) {
         if (AuthUtils.isAdmin(request)) {
-            pdao.updateStatus(id_value, false);
+            List<ProductDTO> listP = pdao.getAllActiveProducts();
+            request.setAttribute("list", listP);
         }
-        return handleProductSearching(request, response);
-    }*/
-    private String handleProductEditing(HttpServletRequest request, HttpServletResponse response) {
-        String productId = request.getParameter("productId");
-        String keyword = request.getParameter("keyword");
+        return "manageProducts.jsp";
+    }
 
-        int id_value = Integer.parseInt(productId);
-
+    private String handleAdminProductSearching(HttpServletRequest request, HttpServletResponse response) {
         if (AuthUtils.isAdmin(request)) {
+            String keyword = request.getParameter("keyword");
+            List<ProductDTO> listByName = pdao.getProductsByName(keyword);
+            request.setAttribute("list", listByName);
+            request.setAttribute("keyword", keyword);
+        }
+        return "manageProducts.jsp";
+    }
+
+    private String handleProductStatusChanging(HttpServletRequest request, HttpServletResponse response) {
+        if (AuthUtils.isAdmin(request)) {
+            String productId = request.getParameter("productId");
+            String keyword = request.getParameter("keyword");
+            int id_value = Integer.parseInt(productId);
+
+            boolean updated = pdao.updateStatus(id_value, false);
+            System.out.println("Status update success? " + updated); // ✅ debug log
+        }
+        return handleAdminProductSearching(request, response);
+    }
+
+    private String handleProductEditing(HttpServletRequest request, HttpServletResponse response) {
+        if (AuthUtils.isAdmin(request)) {
+            String productId = request.getParameter("productId");
+            String keyword = request.getParameter("keyword");
+            int id_value = Integer.parseInt(productId);
+
             ProductDTO product = pdao.getProductByID(id_value);
             if (product != null) {
                 request.setAttribute("keyword", keyword);
                 request.setAttribute("product", product);
                 request.setAttribute("isEdit", true);
-                return "productForm.jsp";
             }
-        }
-        return handleProductSearching(request, response);
-    }
-
-    /*private String handleProductAdding(HttpServletRequest request, HttpServletResponse response) {
-        if (AuthUtils.isAdmin(request)) {
-            String checkError = "";
-            String message = "";
-            String name = request.getParameter("name");
-            String image = request.getParameter("image");
-            String description = request.getParameter("description");
-            String price = request.getParameter("price");
-            String catID = request.getParameter("catID");
-            String status = request.getParameter("status");
-            String author = request.getParameter("author");
-
-            double price_value = -1;
-            try {
-                price_value = Double.parseDouble(price);
-                if (price_value <= 0) {
-                    checkError += "Price must be greater than zero.<br/>";
-                }
-            } catch (NumberFormatException e) {
-                checkError += "Invalid price format. Please enter a valid number.<br/>";
-            }
-
-            int cat_value = 0;
-            try {
-                cat_value = Integer.parseInt(catID);
-                if (cat_value <= 0) {
-                    checkError += "Category ID must be a positive number.<br/>";
-                }
-            } catch (NumberFormatException e) {
-                checkError += "Invalid Category ID format.<br/>";
-            }
-
-            boolean status_value = true;
-            try {
-                status_value = Boolean.parseBoolean(status);
-            } catch (Exception e) {
-            }
-
-            if (checkError.isEmpty()) {
-                message = "Add product successfully.";
-            }
-
-            ProductDTO product = new ProductDTO(name, image, description, price_value, cat_value, author, status_value);
-            if (!pdao.create(product)) {
-                checkError += "<br/>Can not add new product.";
-            }
-
-            request.setAttribute("product", product);
-            request.setAttribute("checkError", checkError);
-            request.setAttribute("message", message);
         }
         return "productForm.jsp";
     }
@@ -183,64 +159,237 @@ public class ProductController extends HttpServlet {
         if (AuthUtils.isAdmin(request)) {
             String checkError = "";
             String message = "";
+
+            // Lấy dữ liệu từ form
             String id = request.getParameter("id");
-            int id_value = Integer.parseInt(id);
             String name = request.getParameter("name");
             String image = request.getParameter("image");
             String description = request.getParameter("description");
             String price = request.getParameter("price");
             String catID = request.getParameter("catID");
-            String status = request.getParameter("status");
             String author = request.getParameter("author");
+            String supplierID = request.getParameter("supplierID");
+            String releaseDate = request.getParameter("releaseDate");
+            String discount = request.getParameter("discount");
+            String unitsInStock = request.getParameter("unitsInStock");
+            String status = request.getParameter("status");
 
-            double price_value = -1;
+            int id_value = Integer.parseInt(id);
+            double unitPrice = 0;
+            int categoryId = 0;
+            int supplierId = 0;
+            int stock = 0;
+            double discountPercent = 0;
+            Date releaseDateValue = null;
+            boolean status_value = "true".equals(status);
+
+            // Validation
+            if (name == null || name.trim().isEmpty()) {
+                checkError += "Product name is required.<br/>";
+            }
+
+            if (author == null || author.trim().isEmpty()) {
+                checkError += "Author is required.<br/>";
+            }
+
             try {
-                price_value = Double.parseDouble(price);
-                if (price_value <= 0) {
+                unitPrice = Double.parseDouble(price);
+                if (unitPrice <= 0) {
                     checkError += "Price must be greater than zero.<br/>";
                 }
-            } catch (NumberFormatException e) {
-                checkError += "Invalid price format. Please enter a valid number.<br/>";
+            } catch (Exception e) {
+                checkError += "Invalid price format.<br/>";
             }
 
-            int cat_value = 0;
             try {
-                cat_value = Integer.parseInt(catID);
-                if (cat_value <= 0) {
-                    checkError += "Category ID must be a positive number.<br/>";
+                categoryId = Integer.parseInt(catID);
+                if (categoryId <= 0) {
+                    checkError += "Category ID must be positive.<br/>";
                 }
-            } catch (NumberFormatException e) {
-                checkError += "Invalid Category ID format.<br/>";
+            } catch (Exception e) {
+                checkError += "Invalid Category ID.<br/>";
             }
 
-            boolean status_value = status != null && status.equals("true");
-
-            if (name == null || name.trim().isEmpty()) {
-                checkError += "Product name is requried.<br/>";
+            try {
+                supplierId = Integer.parseInt(supplierID);
+            } catch (Exception e) {
+                checkError += "Invalid Supplier ID.<br/>";
             }
+
+            try {
+                if (releaseDate != null && !releaseDate.trim().isEmpty()) {
+                    releaseDateValue = Date.valueOf(releaseDate);
+                }
+            } catch (Exception e) {
+                checkError += "Invalid release date format.<br/>";
+            }
+
+            try {
+                discountPercent = Double.parseDouble(discount);
+                if (discountPercent < 0 || discountPercent > 100) {
+                    checkError += "Discount must be between 0 and 100.<br/>";
+                }
+            } catch (Exception e) {
+                checkError += "Invalid discount format.<br/>";
+            }
+
+            try {
+                stock = Integer.parseInt(unitsInStock);
+                if (stock < 0) {
+                    checkError += "Units in stock must be zero or positive.<br/>";
+                }
+            } catch (Exception e) {
+                checkError += "Invalid units in stock format.<br/>";
+            }
+
+            // Tạo DTO
+            CategoryDTO cat = new CategoryDTO();
+            cat.setCategoryId(categoryId);
+            SupplierDTO sup = new SupplierDTO();
+            sup.setSupplierId(supplierId);
+
+            ProductDTO product = new ProductDTO(id_value, name, author, sup, cat, unitPrice, stock, image, description, releaseDateValue, discountPercent, status_value);
 
             if (checkError.isEmpty()) {
-                ProductDTO product = new ProductDTO(id_value, name, image, description, price_value, cat_value, author, status_value);
                 if (pdao.update(product)) {
-                    message = "Product updated succesfully";
-                    //return to productEdit
-                    return handleProductSearching(request, response);
-                } else {
-                    checkError += "Cannot update product <br/>";
+                    message = "Product updated successfully.";
                     request.setAttribute("product", product);
+                    request.setAttribute("message", message);
+                    request.setAttribute("isEdit", true);
+                    return "productForm.jsp";  // ✅ GIỮ NGUYÊN TRANG
+                } else {
+                    checkError += "Failed to update product.<br/>";
                 }
-            } else {
-                //keep the form 
-                ProductDTO product = new ProductDTO(id_value, name, image, description, price_value, cat_value, author, status_value);
-                request.setAttribute("product", product);
             }
 
+            // Trường hợp có lỗi
+            request.setAttribute("product", product);
             request.setAttribute("checkError", checkError);
             request.setAttribute("message", message);
             request.setAttribute("isEdit", true);
         }
+
         return "productForm.jsp";
-    }*/
+    }
+
+    private String handleProductAdding(HttpServletRequest request, HttpServletResponse response) {
+        if (AuthUtils.isAdmin(request)) {
+            if (request.getMethod().equalsIgnoreCase("GET")) {
+                // Load empty form for adding
+                request.setAttribute("product", new ProductDTO());
+                request.setAttribute("isEdit", false);
+                return "productForm.jsp";
+            }
+
+            String checkError = "";
+            String message = "";
+
+            String name = request.getParameter("name");
+            String image = request.getParameter("image");
+            String description = request.getParameter("description");
+            String price = request.getParameter("price");
+            String catID = request.getParameter("catID");
+            String author = request.getParameter("author");
+            String supplierID = request.getParameter("supplierID");
+            String releaseDate = request.getParameter("releaseDate");
+            String discount = request.getParameter("discount");
+            String unitsInStock = request.getParameter("unitsInStock");
+            String status = request.getParameter("status");
+
+            double unitPrice = 0;
+            int categoryId = 0;
+            int supplierId = 0;
+            int stock = 0;
+            double discountPercent = 0;
+            Date releaseDateValue = null;
+            boolean status_value = "true".equals(status);
+
+            // Validation
+            if (name == null || name.trim().isEmpty()) {
+                checkError += "Product name is required.<br/>";
+            }
+
+            if (author == null || author.trim().isEmpty()) {
+                checkError += "Author is required.<br/>";
+            }
+
+            try {
+                unitPrice = Double.parseDouble(price);
+                if (unitPrice <= 0) {
+                    checkError += "Price must be greater than zero.<br/>";
+                }
+            } catch (Exception e) {
+                checkError += "Invalid price format.<br/>";
+            }
+
+            try {
+                categoryId = Integer.parseInt(catID);
+                if (categoryId <= 0) {
+                    checkError += "Category ID must be positive.<br/>";
+                }
+            } catch (Exception e) {
+                checkError += "Invalid Category ID.<br/>";
+            }
+
+            try {
+                supplierId = Integer.parseInt(supplierID);
+            } catch (Exception e) {
+                checkError += "Invalid Supplier ID.<br/>";
+            }
+
+            try {
+                if (releaseDate != null && !releaseDate.trim().isEmpty()) {
+                    releaseDateValue = Date.valueOf(releaseDate);
+                }
+            } catch (Exception e) {
+                checkError += "Invalid release date format.<br/>";
+            }
+
+            try {
+                discountPercent = Double.parseDouble(discount);
+                if (discountPercent < 0 || discountPercent > 100) {
+                    checkError += "Discount must be between 0 and 100.<br/>";
+                }
+            } catch (Exception e) {
+                checkError += "Invalid discount format.<br/>";
+            }
+
+            try {
+                stock = Integer.parseInt(unitsInStock);
+                if (stock < 0) {
+                    checkError += "Units in stock must be zero or positive.<br/>";
+                }
+            } catch (Exception e) {
+                checkError += "Invalid units in stock format.<br/>";
+            }
+
+            CategoryDTO category = new CategoryDTO();
+            category.setCategoryId(categoryId);
+
+            SupplierDTO supplier = new SupplierDTO();
+            supplier.setSupplierId(supplierId);
+
+            ProductDTO product = new ProductDTO(name, author, supplier, category, unitPrice, stock, image, description, releaseDateValue, discountPercent, status_value);
+
+            if (checkError.isEmpty()) {
+                if (pdao.create(product)) {
+                    message = "Product added successfully.";
+                    request.setAttribute("message", message);
+                    return "productForm.jsp";
+                } else {
+                    checkError = "Failed to add product to the database.";
+                }
+            }
+
+            request.setAttribute("checkError", checkError);
+            request.setAttribute("message", message);
+            request.setAttribute("product", product);
+            request.setAttribute("isEdit", false);
+        }
+
+        return "productForm.jsp";
+    }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

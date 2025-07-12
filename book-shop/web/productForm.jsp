@@ -1,12 +1,7 @@
-<%-- 
-    Document   : productForm
-    Created on : Jun 9, 2025, 9:08:33 PM
-    Author     : trang
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <c:set var="checkError" value="${requestScope.checkError}" />
 <c:set var="message" value="${requestScope.message}" />
@@ -19,75 +14,100 @@
     <head>
         <meta charset="UTF-8">
         <title>Product Form</title>
-        <link rel="stylesheet" href="assets/css02/productForm.css"> 
     </head>
-    
     <body>
         <div class="container">
             <c:choose>
                 <c:when test="${sessionScope.user != null && sessionScope.user.roleID == 'AD'}">
-
-                    <div class="header">
-                        <a href="productEdit.jsp" class="back-link">← Back to Products</a>
-                        <h1>${isEdit ? "EDIT PRODUCT" : "ADD PRODUCT"}</h1>
-                    </div>
-
                     <div class="form-container">
-                        <form action="MainController" method="post">
-                            <input type="hidden" name="action" value="${isEdit ? 'updateProduct' : 'addProduct'}"/>
+                        <form id="productForm"
+                              method="post"
+                              data-controller="ProductController">
+
+                            <input type="hidden" name="action" value="${isEdit ? 'updateProduct' : 'addProduct'}" />
 
                             <c:if test="${isEdit}">
                                 <div class="form-group">
                                     <label for="id">ID <span class="required">*</span></label>
-                                    <input type="text" id="id" name="id" value="${product.id}" readonly />
+                                    <input type="text" id="id" name="id" readonly value="${product.productId}" />
                                 </div>
                             </c:if>
 
                             <div class="form-group">
                                 <label for="name">Name <span class="required">*</span></label>
-                                <input type="text" id="name" name="name" required value="${product.name}" />
+                                <input type="text" id="name" name="name" required autocomplete="off"
+                                       value="${product.productName != null ? product.productName : ''}" />
                             </div>
 
                             <div class="form-group">
                                 <label for="image">Image URL</label>
-                                <input type="text" id="image" name="image" value="${product.image}" />
+                                <input type="text" id="image" name="image" autocomplete="off"
+                                       value="${product.image != null ? product.image : ''}" />
                             </div>
 
                             <div class="form-group">
                                 <label for="description">Description</label>
-                                <textarea id="description" name="description"
-                                          placeholder="Enter product description...">${product.description}</textarea>
+                                <textarea id="description" name="description" autocomplete="off"
+                                          placeholder="Enter product description...">${product.description != null ? product.description : ''}</textarea>
                             </div>
 
                             <div class="form-group">
                                 <label for="price">Price <span class="required">*</span></label>
                                 <input type="number" id="price" name="price" required min="0" step="0.01"
-                                       placeholder="0.00" value="${product.price}" />
+                                       value="${product.unitPrice}" />
                             </div>
 
                             <div class="form-group">
-                                <label for="catID">Category_id</label>
-                                <input type="text" id="catID" name="catID" value="${product.catID}" />
+                                <label for="catID">Category ID <span class="required">*</span></label>
+                                <input type="number" id="catID" name="catID" required min="1"
+                                       value="${product.category != null ? product.category.categoryId : ''}" />
                             </div>
 
                             <div class="form-group">
-                                <label for="name">Author <span class="required">*</span></label>
-                                <input type="text" id="author" name="author" required value="${product.author}" />
+                                <label for="supplierID">Supplier ID <span class="required">*</span></label>
+                                <input type="number" id="supplierID" name="supplierID" required min="1"
+                                       value="${product.supplier != null ? product.supplier.supplierId : ''}" />
                             </div>
 
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="status" name="status" value="true"
-                                <c:if test="${product.status}">checked</c:if> />
+                            <div class="form-group">
+                                <label for="author">Author <span class="required">*</span></label>
+                                <input type="text" id="author" name="author" required autocomplete="off"
+                                       value="${product.author != null ? product.author : ''}" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="unitsInStock">Units In Stock <span class="required">*</span></label>
+                                <input type="number" id="unitsInStock" name="unitsInStock" required min="0"
+                                       value="${product.unitsInStock}" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="discount">Discount (%)</label>
+                                <input type="number" id="discount" name="discount" min="0" max="100" step="0.01"
+                                       value="${product.discount}" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="releaseDate">Release Date</label>
+                                <fmt:formatDate value="${product.releaseDate}" pattern="yyyy-MM-dd" var="formattedDate" />
+                                <input type="date" id="releaseDate" name="releaseDate" value="${formattedDate}" />
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <input type="hidden" name="status" value="true" />
+                                <input type="checkbox" id="status" value="true" checked disabled />
                                 <label for="status">Active Product</label>
                             </div>
 
+
                             <div class="button-group">
                                 <input type="hidden" name="keyword" value="${keyword}" />
-                                <input type="submit" value="${isEdit ? 'Update Product' : 'Add Product'}"/>
-                                <input type="reset" value="Reset"/>
+                                <input type="submit" value="${isEdit ? 'Update Product' : 'Add Product'}" />
+                                <input type="reset" value="Reset" />
                             </div>
                         </form>
 
+                        <!-- Error or success messages -->
                         <c:if test="${not empty checkError}">
                             <div class="error-message">${checkError}</div>
                         </c:if>
@@ -95,8 +115,8 @@
                             <div class="success-message">${message}</div>
                         </c:if>
                     </div>
-
                 </c:when>
+
                 <c:otherwise>
                     <div class="header">
                         <h1>ACCESS DENIED</h1>
@@ -106,7 +126,6 @@
                     </div>
                 </c:otherwise>
             </c:choose>
-
         </div>
     </body>
 </html>

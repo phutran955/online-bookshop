@@ -1,0 +1,186 @@
+/* === Cart Container === */
+.cart-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+/* === Left: Cart Items Table === */
+.cart-items {
+    flex: 1 1 65%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.cart-items table,
+.cart-items th,
+.cart-items td {
+    border: none !important;
+}
+
+.cart-items thead {
+    background-color: #ffffff !important;
+}
+
+/* === Product Image Styling === */
+img {
+    border-radius: 10px;
+    max-width: 100%;
+    height: auto;
+}
+
+/* === Combined Product Cell (Image + Name) === */
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+/* === Quantity Input === */
+.qty-input {
+    text-align: center;
+    margin: auto;
+    display: block;
+    width: 60px;
+    height: 32px;
+    font-size: 0.85rem;
+}
+
+/* === General Button Style === */
+.cart-container button {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: none !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* === Square Remove Button === */
+.cart-items .btn-dark {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === Remove Icon Size === */
+.cart-items .btn-dark i {
+    font-size: 0.9rem;
+}
+
+/* === Right: Summary Box === */
+.cart-summary {
+    flex: 1 1 30%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #f6f6f6;
+    max-height: 400px;
+}
+
+.cart-summary h4 {
+    margin-bottom: 1rem;
+}
+
+.cart-summary input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #aaa;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.cart-summary button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #000;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cart-summary .totals {
+    margin: 1rem 0;
+}
+
+.cart-summary .totals div {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    font-size: 0.95rem;
+}
+
+.cart-summary .totals .total {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* === Full-width black checkout button === */
+.cart-summary .btn-dark {
+    width: 100%;
+    background-color: #000 !important;
+    color: #fff !important;
+    border: none;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-block;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease;
+}
+
+.cart-summary .btn-dark:hover {
+    background-color: #222 !important;
+}
+
+
+/* === Table Cell Alignment === */
+.table th,
+.table td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+/* === Optional: Clear cart link === */
+.clear-cart {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.clear-cart a {
+    color: red;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .cart-container {
+        flex-direction: column;
+    }
+
+    .cart-items,
+    .cart-summary {
+        flex: 1 1 100%;
+    }
+
+    .cart-summary {
+        max-height: none;
+    }
+}

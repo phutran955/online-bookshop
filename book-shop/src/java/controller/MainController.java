@@ -10,11 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import model.CategoryDAO;
-import model.CategoryDTO;
 import model.ProductDAO;
-import model.ProductDTO;
 
 /**
  *
@@ -33,24 +30,27 @@ public class MainController extends HttpServlet {
                 || "logout".equals(action)
                 || "register".equals(action)
                 || "updateProfile".equals(action)
-                || "viewProfile".equals(action)
                 || "changePassword".equals(action);
+        
     }
 
     private boolean isProductAction(String action) {
-        return "addProduct".equals(action)
+        return "viewProduct".equals(action)
                 || "searchProduct".equals(action)
-                || "loadHP".equals(action)
-                || "changeProductStatus".equals(action)
-                || "editProduct".equals(action)
+                || "pagingProduct".equals(action)
+                
+                || "viewProducts".equals(action)
+                || "adminSearch".equals(action)
+                || "addProduct".equals(action)
                 || "updateProduct".equals(action)
-                || "viewProduct".equals(action)
-                || "pagingProduct".equals(action);
+                || "editProduct".equals(action)
+                || "changeProductStatus".equals(action);
     }
 
     private boolean isCategoryAction(String action) {
         return "viewCat".equals(action)
-                || "viewAllProducts".equals(action);
+                || "viewAllProducts".equals(action)
+                || "home".equals(action);
     }
 
     private boolean isCartAction(String action) {
@@ -67,14 +67,6 @@ public class MainController extends HttpServlet {
         String url = WELCOME;
         try {
             String action = request.getParameter("action");
-
-            List<ProductDTO> listP = pdao.get4NewestProducts();
-            List<ProductDTO> listAll = pdao.get4NewestProducts();
-            List<CategoryDTO> listC = cdao.getAllCategory();
-            request.setAttribute("listP", listP);
-            request.setAttribute("listAll", listAll);
-            request.setAttribute("listC", listC);
-            url = "index.jsp";
 
             if (isUserAction(action)) {
                 url = "/UserController";

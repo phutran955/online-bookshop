@@ -14,4 +14,10 @@
 <link rel="stylesheet" href="assets/css/normalize.css">
 <link rel="stylesheet" href="assets/icomoon/icomoon.css">
 <link rel="stylesheet" href="assets/css/vendor.css">
-<link rel="stylesheet" href="assets/css/style.css">  
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!-- JS Scripts -->
+<script src="assets/js/jquery-1.11.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/plugins.js"></script>
+<script src="assets/js/script.js"></script>
