@@ -35,23 +35,46 @@ public class LoadMoreController extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         for (ProductDTO p : listP) {
+            double salePrice = p.getSalePrice();
+            double unitPrice = p.getUnitPrice();
+            double discount = p.getDiscount();
+
             out.println("<div class=\"col-md-3\">");
             out.println("  <div class=\"product-item\">");
-            out.println("    <input type='hidden' name='id' value='" + p.getProductId() + "'>");
             out.println("    <figure class=\"product-style\">");
             out.println("      <a href=\"MainController?action=viewProduct&id=" + p.getProductId() + "\">");
             out.println("        <img src=\"" + p.getImage() + "\" alt=\"" + p.getProductName() + "\" class=\"product-item\">");
             out.println("      </a>");
-            out.println("      <form action=\"MainController\" method=\"get\">");
+            out.println("      <form action=\"MainController\" method=\"post\">");
             out.println("        <input type=\"hidden\" name=\"action\" value=\"addToCart\">");
             out.println("        <input type=\"hidden\" name=\"id\" value=\"" + p.getProductId() + "\">");
             out.println("        <input type=\"hidden\" name=\"qty\" value=\"1\">");
             out.println("        <button type=\"submit\" class=\"add-to-cart\">Add to Cart</button>");
             out.println("      </form>");
             out.println("    </figure>");
-            out.println("    <figcaption>");
+            out.println("    <figcaption style=\"text-align: center;\">");
             out.println("      <h3>" + p.getProductName() + "</h3>");
-            out.println("      <div class=\"item-price\">" + formatPrice(p.getUnitPrice()) + " đ</div>");
+
+            if (discount > 0) {
+                out.println("      <div style=\"display: flex; justify-content: center; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 5px;\">");
+                out.println("        <span style=\"color: #888; text-decoration: line-through; font-size: 1rem;\">");
+                out.println("          " + formatPrice(unitPrice) + " đ");
+                out.println("        </span>");
+                out.println("        <span style=\"color: #d60000; font-size: 1.2rem; font-weight: bold;\">");
+                out.println("          " + formatPrice(salePrice) + " đ");
+                out.println("        </span>");
+                out.println("        <span style=\"background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;\">");
+                out.println("          -" + Math.round(discount * 100) + "%");
+                out.println("        </span>");
+                out.println("      </div>");
+            } else {
+                out.println("      <div style=\"margin-top: 5px;\">");
+                out.println("        <span style=\"color: #000; font-size: 1.2rem; font-weight: bold;\">");
+                out.println("          " + formatPrice(unitPrice) + " đ");
+                out.println("        </span>");
+                out.println("      </div>");
+            }
+
             out.println("    </figcaption>");
             out.println("  </div>");
             out.println("</div>");

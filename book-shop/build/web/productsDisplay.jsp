@@ -17,6 +17,9 @@
             <!-- Left: Category List + Price Filter -->
             <div class="category-box">
                 <ul>
+                    <li>
+                        <a href="MainController?action=allProducts">All</a>
+                    </li>
                     <c:if test="${not empty listC}">
                         <c:forEach var="c" items="${listC}">
                             <li>
@@ -34,10 +37,10 @@
                 <div class="row">
                     <c:if test="${not empty listP}">
                         <c:forEach var="p" items="${listP}">
-                            <div class="col-md-3 mb-4">
+                            <div class="col-md-3">
                                 <div class="product-item">
                                     <figure class="product-style">
-                                        <a href="MainController?action=viewProduct&id=${p.productId}">
+                                        <a href="MainController?action=viewProduct&idP=${p.productId}&idS=${p.supplier.supplierId}">
                                             <img src="${p.image}" alt="${p.productName}" class="product-item">
                                         </a>
                                         <form action="MainController" method="post">
@@ -47,11 +50,30 @@
                                             <button type="submit" class="add-to-cart">Add to Cart</button>
                                         </form>
                                     </figure>
-                                    <figcaption>
+                                    <figcaption style="text-align: center;">
                                         <h3>${p.productName}</h3>
-                                        <div class="item-price">
-                                            <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0"/> đ
-                                        </div>
+                                        <c:choose>
+                                            <c:when test="${p.discount > 0}">
+                                                <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 5px;">
+                                                    <span style="color: #888; text-decoration: line-through; font-size: 1rem;">
+                                                        <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                    </span>
+                                                    <span style="color: #d60000; font-size: 1.2rem; font-weight: bold;">
+                                                        <fmt:formatNumber value="${p.salePrice}" type="number" minFractionDigits="0" /> đ
+                                                    </span>
+                                                    <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                                        -<fmt:formatNumber value="${p.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                    </span>
+                                                </div>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <div style="margin-top: 5px;">
+                                                    <span style="color: #000; font-size: 1.2rem; font-weight: bold;">
+                                                        <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                    </span>
+                                                </div>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </figcaption>
                                 </div>
                             </div>
@@ -75,7 +97,7 @@
                                     <c:choose>
                                         <c:when test="${currentPage > 1}">
                                             <li class="page-item">
-                                                <a class="page-link" href="MainController?action=pagingProduct&page=${currentPage - 1}">Previous</a>
+                                                <a class="page-link" href="MainController?action=allProducts&page=${currentPage - 1}">Previous</a>
                                             </li>
                                         </c:when>
                                         <c:otherwise>
@@ -95,7 +117,7 @@
                                             </c:when>
                                             <c:otherwise>
                                                 <li class="page-item">
-                                                    <a class="page-link" href="MainController?action=pagingProduct&page=${i}">${i}</a>
+                                                    <a class="page-link" href="MainController?action=allProducts&page=${i}">${i}</a>
                                                 </li>
                                             </c:otherwise>
                                         </c:choose>
@@ -105,7 +127,7 @@
                                     <c:choose>
                                         <c:when test="${currentPage < totalPages}">
                                             <li class="page-item">
-                                                <a class="page-link" href="MainController?action=pagingProduct&page=${currentPage + 1}">Next</a>
+                                                <a class="page-link" href="MainController?action=allProducts&page=${currentPage + 1}">Next</a>
                                             </li>
                                         </c:when>
                                         <c:otherwise>

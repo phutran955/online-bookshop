@@ -19,8 +19,66 @@ import utils.DbUtils;
  */
 public class UserDAO {
 
+    private static final String UPDATE_USER = "UPDATE tblUsers SET FullName = ?, Email = ?, BirthDay = ?, Address = ?, Phone = ? WHERE UserName = ?";
+
     public UserDAO() {
 
+    }
+
+    //profile
+    public boolean checkPassword(String username, String inputPassword) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean matched = false;
+
+        try {
+            conn = DbUtils.getConnection();
+            String sql = "SELECT Password FROM tblUsers WHERE UserName = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String dbPassword = rs.getString("Password");
+                matched = inputPassword.equals(dbPassword); // Có thể dùng hash nếu cần
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return matched;
+    }
+
+    public boolean updateUser(UserDTO user) {
+        boolean success = false;
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(UPDATE_USER);
+
+            ps.setString(1, user.getFullName());
+            ps.setString(2, user.getEmail());
+            ps.setDate(3, (java.sql.Date) user.getBirthDay());
+            ps.setString(4, user.getAddress());
+            ps.setString(5, user.getPhone());
+            ps.setString(6, user.getUserName());
+
+            int rowsAffected = ps.executeUpdate();
+            success = (rowsAffected > 0);
+
+        } catch (Exception e) {
+            System.err.println("Error in updateUser(): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, null);
+        }
+
+        return success;
     }
 
     public boolean createUserWithWallet(UserDTO user) {
@@ -241,31 +299,6 @@ public class UserDAO {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public boolean updateUser(UserDTO user) {
-        String sql = "UPDATE tblUsers SET FullName=?, Password=?, Email=?, BirthDay=?, Address=?, Phone=? WHERE UserID=?";
-        try ( Connection conn = DbUtils.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, user.getFullName());
-            ps.setString(2, user.getPassword());
-            ps.setString(3, user.getEmail());
-
-            if (user.getBirthDay() != null) {
-                ps.setDate(4, new java.sql.Date(user.getBirthDay().getTime()));
-            } else {
-                ps.setNull(4, java.sql.Types.DATE);
-            }
-
-            ps.setString(5, user.getAddress());
-            ps.setString(6, user.getPhone());
-            ps.setInt(7, user.getUserID());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     public boolean updateStatus(int userID, boolean status) {

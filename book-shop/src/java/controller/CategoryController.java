@@ -34,11 +34,6 @@ public class CategoryController extends HttpServlet {
             String action = request.getParameter("action");
             if (action.equals("viewCat")) {
                 url = handleViewCat(request, response);
-
-            } else if (action.equals("viewAllProducts")) {
-                url = handleViewAllProducts(request, response);
-            } else if (action.equals("home")) {
-                url = handleHome(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -46,34 +41,36 @@ public class CategoryController extends HttpServlet {
         }
     }
 
-    private String handleHome(HttpServletRequest request, HttpServletResponse response) {
-        List<ProductDTO> listP = pdao.get4NewestProducts();
-        List<ProductDTO> listAll = pdao.get4NewestProducts();
-        List<CategoryDTO> listC = cdao.getAllCategory();
-        request.setAttribute("listP", listP);
-        request.setAttribute("listAll", listAll);
-        request.setAttribute("listC", listC);
-        return "index.jsp";
-    }
-
     private String handleViewCat(HttpServletRequest request, HttpServletResponse response) {
-        String catID = request.getParameter("catID"); //call catID 
-        int cat_value = Integer.parseInt(catID);
+        final int PAGE_SIZE = 12;
+        int page = 1;
 
-        List<ProductDTO> listByCat = pdao.getProductsByCatID(cat_value);
-        request.setAttribute("listP", listByCat);
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                page = Integer.parseInt(pageParam);
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
 
-        List<CategoryDTO> listC = cdao.getAllCategory(); //reload the cat
-        request.setAttribute("listC", listC);
-        return "productsDisplay.jsp";
-    }
+        String catIDParam = request.getParameter("catID");
+        int catID = Integer.parseInt(catIDParam);
 
-    private String handleViewAllProducts(HttpServletRequest request, HttpServletResponse response) {
+        // Get product list by category with paging
+        List<ProductDTO> listByCat = cdao.getProductsByCatIDWithPaging(catID, page, PAGE_SIZE);
+        int totalProducts = cdao.countProductsByCatID(catID);
+        int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
+
+        // Load all categories for sidebar or filter
         List<CategoryDTO> listC = cdao.getAllCategory();
-        request.setAttribute("listC", listC);
 
-        List<ProductDTO> listP = pdao.getAllActiveProducts();
-        request.setAttribute("listP", listP);
+        request.setAttribute("listP", listByCat);
+        request.setAttribute("listC", listC);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("catID", catID); // to preserve category filter in pagination links
+
         return "productsDisplay.jsp";
     }
 

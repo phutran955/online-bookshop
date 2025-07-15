@@ -1,3 +1,4 @@
+
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -14,7 +15,6 @@
         <jsp:include page="components/header.jsp"/>
 
         <div class="container my-5">
-            <h2 class="mb-4">🛒 Cart</h2>
             <div class="cart-container">
 
                 <!-- Left: Cart Items -->
@@ -31,8 +31,9 @@
                         </thead>
                         <tbody>
                             <c:forEach var="item" items="${cartItems}">
-                                <c:set var="unitPrice" value="${item.product.getSalePrice()}" />
-                                <c:set var="lineTotal" value="${unitPrice * item.quantity}" />
+                                <c:set var="unitPrice" value="${item.product.unitPrice}" />
+                                <c:set var="quantity" value="${item.quantity}" />
+                                <c:set var="lineTotal" value="${unitPrice * quantity}" />
 
                                 <tr>
                                     <td class="text-start">
@@ -41,9 +42,11 @@
                                             <div>${item.product.productName}</div>
                                         </div>
                                     </td>
-                                    <td><fmt:formatNumber value="${unitPrice}" type="number" maxFractionDigits="0"/> đ</td>
                                     <td>
-                                        <input type="number" name="qty" value="${item.quantity}" min="1"
+                                        <fmt:formatNumber value="${unitPrice}" type="number" maxFractionDigits="0"/> đ
+                                    </td>
+                                    <td>
+                                        <input type="number" name="qty" value="${quantity}" min="1"
                                                class="form-control form-control-sm qty-input"
                                                data-id="${item.product.productId}"
                                                data-price="${unitPrice}"
@@ -60,8 +63,6 @@
                                             <button type="submit" class="btn btn-sm btn-dark" title="Remove item">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
-
-
                                         </form>
                                     </td>
                                 </tr>
@@ -76,28 +77,32 @@
                     <c:set var="totalDiscount" value="0" />
 
                     <c:forEach var="item" items="${cartItems}">
-                        <c:set var="price" value="${item.product.getSalePrice()}" />
+                        <c:set var="unitPrice" value="${item.product.unitPrice}" />
+                        <c:set var="salePrice" value="${item.product.salePrice}" />
                         <c:set var="qty" value="${item.quantity}" />
-                        <c:set var="discountPerItem" value="${price * qty * item.product.discount}" />
-                        <c:set var="lineTotal" value="${price * qty}" />
 
-                        <c:set var="subtotal" value="${subtotal + lineTotal}" />
-                        <c:set var="totalDiscount" value="${totalDiscount + discountPerItem}" />
+                        <c:set var="subtotal" value="${subtotal + (unitPrice * qty)}" />
+                        <c:set var="totalDiscount" value="${totalDiscount + ((unitPrice - salePrice) * qty)}" />
                     </c:forEach>
 
                     <div class="totals">
-                        <div><span>Subtotal</span><span><fmt:formatNumber value="${subtotal}" type="number" maxFractionDigits="0"/> đ</span></div>
-                        <div><span>Discount</span><span><fmt:formatNumber value="${totalDiscount}" type="number" maxFractionDigits="0"/> đ</span></div>
+                        <div><span>Subtotal</span>
+                            <span><fmt:formatNumber value="${subtotal}" type="number" maxFractionDigits="0"/> đ</span>
+                        </div>
+                        <div><span>Discount</span>
+                            <span><fmt:formatNumber value="${totalDiscount}" type="number" maxFractionDigits="0"/> đ</span>
+                        </div>
                         <div class="total">
                             <span>Total</span>
                             <span><fmt:formatNumber value="${subtotal - totalDiscount}" type="number" maxFractionDigits="0"/> đ</span>
                         </div>
                     </div>
-
+ 
                     <a href="MainController?action=checkOut" class="btn btn-dark w-100 mt-3">CHECKOUT</a>
                 </div>
             </div>
         </div>
+
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="assets/js02/cart.js" type="text/javascript"></script>
     </body>

@@ -12,10 +12,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.util.List;
+import model.CategoryDAO;
 import model.CategoryDTO;
 import model.ProductDAO;
 import model.ProductDTO;
 import model.SupplierDTO;
+import model.SupplierDAO;
 import utils.AuthUtils;
 
 /**
@@ -26,6 +28,8 @@ import utils.AuthUtils;
 public class ProductController extends HttpServlet {
 
     ProductDAO pdao = new ProductDAO();
+    CategoryDAO cdao = new CategoryDAO();
+    SupplierDAO sdao = new SupplierDAO();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -40,10 +44,10 @@ public class ProductController extends HttpServlet {
             } else if (action.equals("searchProduct")) {
                 url = handleProductSearching(request, response);
 
-            } else if (action.equals("pagingProduct")) {
+            } else if (action.equals("allProducts")) {
                 url = handleShowProductsByPaging(request, response);
 
-            //Admin
+                //Admin
             } else if (action.equals("viewProducts")) {
                 url = handleviewActiveProducts(request, response);
 
@@ -61,6 +65,9 @@ public class ProductController extends HttpServlet {
 
             } else if (action.equals("adminSearch")) {
                 url = handleAdminProductSearching(request, response);
+
+            } else if (action.equals("home")) {
+                url = handleHome(request, response);
             }
         } catch (Exception e) {
         } finally {
@@ -68,19 +75,61 @@ public class ProductController extends HttpServlet {
         }
     }
 
+    private String handleHome(HttpServletRequest request, HttpServletResponse response) {
+        List<ProductDTO> listP = pdao.get4NewestProducts();
+        List<ProductDTO> listAll = pdao.getTop4HighDiscountProducts();
+
+        request.setAttribute("listP", listP);
+        request.setAttribute("listAll", listAll);
+        return "index.jsp";
+    }
+
     private String handleViewSingleProduct(HttpServletRequest request, HttpServletResponse response) {
-        String id = request.getParameter("id");
-        int id_value = Integer.parseInt(id);
-        ProductDTO oneP = pdao.getProductByID(id_value);
+        int idP = Integer.parseInt(request.getParameter("idP"));
+        int idS = Integer.parseInt(request.getParameter("idS"));
+        ProductDTO oneP = pdao.getProductByID(idP);
+        SupplierDTO oneS = sdao.getSupplierByID(idS);
         request.setAttribute("p", oneP);
+        request.setAttribute("s", oneS);
         return "detail.jsp";
     }
 
     private String handleProductSearching(HttpServletRequest request, HttpServletResponse response) {
+        final int PAGE_SIZE = 12;
+        int page = 1;
+
+        // Get current page
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                page = Integer.parseInt(pageParam);
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
         String keyword = request.getParameter("keyword");
-        List<ProductDTO> listByName = pdao.getProductsByName(keyword);
+        if (keyword == null) {
+            keyword = "";
+        }
+
+        // Get total products matching the keyword
+        int totalProducts = pdao.countProductsByName(keyword);
+        int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
+
+        // Get paginated search results
+        List<ProductDTO> listByName = pdao.getProductsByNameWithPaging(keyword, page, PAGE_SIZE);
+
+        // Get categories if needed for filter/sidebar
+        List<CategoryDTO> listC = cdao.getAllCategory();
+
+        // Set attributes
         request.setAttribute("listP", listByName);
         request.setAttribute("keyword", keyword);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("listC", listC);
+
         return "productsDisplay.jsp";
     }
 
@@ -101,6 +150,8 @@ public class ProductController extends HttpServlet {
         int totalProducts = pdao.countAllActiveProducts();
         int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
 
+        List<CategoryDTO> listC = cdao.getAllCategory();
+        request.setAttribute("listC", listC);
         request.setAttribute("listP", listP);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);

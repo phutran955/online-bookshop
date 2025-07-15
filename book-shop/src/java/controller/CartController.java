@@ -22,6 +22,7 @@ import model.ProductDAO;
 import model.ProductDTO;
 import model.WalletDTO;
 import model.WalletDAO;
+import utils.EmailUtlils;
 import utils.AuthUtils;
 import utils.CartCookieUtils;
 
@@ -52,6 +53,7 @@ public class CartController extends HttpServlet {
             } else if ("changeOrderStatus".equals(action)) {
                 url = handleChangeOrderStatus(request, response);
 
+                //Cookie
             } else if (action.equals("addToCart")) {
                 url = handleAddToCart(request, response);
 
@@ -71,6 +73,96 @@ public class CartController extends HttpServlet {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
+    }
+
+    private String handleCheckout(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        // 1. Require login
+        if (user == null) {
+            return "login.jsp";
+        }
+
+        // 2. Get cart from cookie
+        CartDTO cart = CartCookieUtils.getCartFromCookie(request);
+        if (cart == null || cart.getListItems().isEmpty()) {
+            request.setAttribute("message", "Cart is empty!");
+            return "cart.jsp";
+        }
+
+        // 3. Check stock availability
+        for (ItemDTO item : cart.getListItems()) {
+            int productId = item.getProduct().getProductId();
+            int quantityInCart = item.getQuantity();
+
+            ProductDTO product = pdao.getProductByID(productId);
+            if (product == null) {
+                request.setAttribute("message", "Product not found: ID " + productId);
+                return "cart.jsp";
+            }
+
+            if (quantityInCart > product.getUnitsInStock()) {
+                request.setAttribute("message", "Not enough stock for: " + product.getProductName());
+                return "cart.jsp";
+            }
+        }
+
+        // 4. Check wallet balance
+        WalletDTO wallet = wdao.getWalletByUserName(user.getUserName());
+        double totalAmount = cart.getTotalMoney();
+
+        if (wallet == null) {
+            request.setAttribute("message", "Wallet not found.");
+            return "cart.jsp";
+        }
+
+        if (wallet.getBalance() < totalAmount) {
+            request.setAttribute("message", "Not enough balance in wallet.");
+            return "cart.jsp";
+        }
+
+        // 5. Trừ tiền ví
+        boolean balanceUpdated = wdao.updateBalanceByCheckOut(user.getUserName(), wallet.getBalance() - totalAmount);
+        if (!balanceUpdated) {
+            request.setAttribute("message", "Failed to update wallet balance.");
+            return "cart.jsp";
+        }
+
+        // 6. Place the order
+        boolean orderPlaced = odao.addOrder(user, cart);
+        if (!orderPlaced) {
+            request.setAttribute("message", "Failed to place order.");
+            return "cart.jsp";
+        }
+
+        // 🔥 LẤY orderID mới nhất để gửi email
+        int orderId = odao.getLatestOrderIdByUsername(user.getUserName()); // bạn cần tạo hàm này trong DAO
+        if (orderId > 0) {
+            OrderDTO order = odao.getOrderById(orderId); // đã bao gồm UserDTO
+
+            // 🔥 Tạo email và gửi
+            String html = EmailUtlils.generateCheckoutConfirmationEmail(order.getUser(), order);
+            EmailUtlils.sendEmail(order.getUser().getEmail(), "Xác nhận đơn hàng #" + orderId, html);
+        }
+
+        // 7. Update stock and quantity sold
+        for (ItemDTO item : cart.getListItems()) {
+            int productId = item.getProduct().getProductId();
+            int quantity = item.getQuantity();
+
+            ProductDTO product = pdao.getProductByID(productId);
+            if (product != null) {
+                int newStock = product.getUnitsInStock() - quantity;
+                pdao.updateStock(productId, newStock);
+                pdao.increaseQuantitySold(productId, quantity);
+            }
+        }
+
+        // 8. Clear cart
+        CartCookieUtils.clearCartCookie(response);
+        request.setAttribute("message", "Order placed successfully! Confirmation email sent.");
+        return "cart.jsp";
     }
 
     private String handleViewAllOrders(HttpServletRequest request, HttpServletResponse response) {
@@ -174,7 +266,7 @@ public class CartController extends HttpServlet {
         return "cart.jsp";
     }
 
-    private String handleCheckout(HttpServletRequest request, HttpServletResponse response) {
+    /*private String handleCheckout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         UserDTO user = (UserDTO) session.getAttribute("user");
 
@@ -252,67 +344,7 @@ public class CartController extends HttpServlet {
         CartCookieUtils.clearCartCookie(response);
         request.setAttribute("message", "Order placed successfully! Your wallet has been charged.");
         return "cart.jsp";
-    }
-
-    /*private String handleCheckout(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession();
-        UserDTO user = (UserDTO) session.getAttribute("user");
-
-        // 1. Require login
-        if (user == null) {
-            return "login.jsp";
-        }
-
-        // 2. Get cart from cookie
-        CartDTO cart = CartCookieUtils.getCartFromCookie(request);
-        if (cart == null || cart.getListItems().isEmpty()) {
-            request.setAttribute("message", "Cart is empty!");
-            return "cart.jsp";
-        }
-
-        // 3. Check stock availability for all items
-        for (ItemDTO item : cart.getListItems()) {
-            int productId = item.getProduct().getProductId();
-            int quantityInCart = item.getQuantity();
-
-            ProductDTO product = pdao.getProductByID(productId);
-            if (product == null) {
-                request.setAttribute("message", "Product not found: ID " + productId);
-                return "cart.jsp";
-            }
-
-            if (quantityInCart > product.getUnitsInStock()) {
-                request.setAttribute("message", "Not enough stock for: " + product.getProductName());
-                return "cart.jsp";
-            }
-        }
-
-        // 4. Place the order
-        boolean orderPlaced = odao.addOrder(user, cart);
-        if (!orderPlaced) {
-            request.setAttribute("message", "Failed to place order.");
-            return "cart.jsp";
-        }
-
-        // 5. Update stock and quantity sold after successful order
-        for (ItemDTO item : cart.getListItems()) {
-            int productId = item.getProduct().getProductId();
-            int quantity = item.getQuantity();
-
-            ProductDTO product = pdao.getProductByID(productId);
-            if (product != null) {
-                int newStock = product.getUnitsInStock() - quantity;
-                pdao.updateStock(productId, newStock);
-                pdao.increaseQuantitySold(productId, quantity);
-            }
-        }
-
-        // 6. Clear cart cookie and return success message
-        CartCookieUtils.clearCartCookie(response);
-        request.setAttribute("message", "Order placed successfully!");
-        return "cart.jsp";
     }*/
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

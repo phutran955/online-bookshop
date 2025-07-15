@@ -30,27 +30,28 @@ public class MainController extends HttpServlet {
                 || "logout".equals(action)
                 || "register".equals(action)
                 || "updateProfile".equals(action)
-                || "changePassword".equals(action);
-        
+                ||"profile".equals(action)
+                ||"password".equals(action)
+                || "changePassword".equals(action);       
     }
 
     private boolean isProductAction(String action) {
         return "viewProduct".equals(action)
                 || "searchProduct".equals(action)
-                || "pagingProduct".equals(action)
+                || "allProducts".equals(action)
                 
                 || "viewProducts".equals(action)
                 || "adminSearch".equals(action)
                 || "addProduct".equals(action)
                 || "updateProduct".equals(action)
                 || "editProduct".equals(action)
-                || "changeProductStatus".equals(action);
+                || "changeProductStatus".equals(action)
+                || "home".equals(action);
     }
 
     private boolean isCategoryAction(String action) {
         return "viewCat".equals(action)
-                || "viewAllProducts".equals(action)
-                || "home".equals(action);
+                || "viewAllProducts".equals(action);
     }
 
     private boolean isCartAction(String action) {

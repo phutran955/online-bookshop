@@ -15,6 +15,8 @@ import java.sql.Date;
 import model.UserDAO;
 import model.UserDTO;
 import java.util.List;
+import model.WalletDTO;
+import model.WalletDAO;
 import utils.AuthUtils;
 import utils.PasswordUtlis;
 
@@ -28,6 +30,7 @@ public class UserController extends HttpServlet {
     private static final String WELCOME_PAGE = "login.jsp";
     private static final String LOGIN_PAGE = "index.jsp";
     private UserDAO udao = new UserDAO();
+    private WalletDAO wdao = new WalletDAO();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -45,7 +48,12 @@ public class UserController extends HttpServlet {
                 url = handleRegister(request, response);
             } else if ("updateProfile".equals(action)) {
                 url = handleUpdateProfile(request, response);
+            } else if ("password".equals(action)) {
+                url = handlePasswordChanging(request, response);
+            } else if ("profile".equals(action)) {
+                url = handleProfileViewing(request, response);
 
+//admin
             } else if ("viewUsers".equals(action)) {
                 url = handleViewActiveUsers(request, response);
 
@@ -54,14 +62,8 @@ public class UserController extends HttpServlet {
 
             } else if ("changeUserStatus".equals(action)) {
                 url = handleChangeUserStatus(request, response);
-                
-                
-            } else if("register".equals(action)) {
-                url = handleRegister(request, response);
-            }
-            
-            
-            else {
+
+            } else {
                 request.setAttribute("message", "Invalid action: " + action);
                 url = LOGIN_PAGE;
             }
@@ -70,13 +72,14 @@ public class UserController extends HttpServlet {
             request.getRequestDispatcher(url).forward(request, response);
         }
     }
-    
-     private String handleRegister(HttpServletRequest request, HttpServletResponse response) {
+
+    private String handleRegister(HttpServletRequest request, HttpServletResponse response) {
         String checkError = "";
         String message = "";
         String userName = request.getParameter("userName");
         String fullName = request.getParameter("fullName");
         String password = request.getParameter("password");
+        String confirmPass = request.getParameter("confirmPassword");
         String email = request.getParameter("email");
         String birthDay = request.getParameter("birthDay");
         String address = request.getParameter("address");
@@ -94,12 +97,15 @@ public class UserController extends HttpServlet {
             checkError += "<br/>Password is required.";
         }
 
+        if (!password.equals(confirmPass)) {
+            checkError = "password and confirmation do not match.";
+        }
+
         Date BirthDay = null;
         try {
             if (birthDay != null && !birthDay.isEmpty()) {
-                BirthDay = Date.valueOf(birthDay); 
+                BirthDay = Date.valueOf(birthDay);
 
-                
                 Date today = new Date(System.currentTimeMillis());
                 if (BirthDay.after(today)) {
                     checkError += "<br/> Birth Day must be in the past.";
@@ -108,9 +114,9 @@ public class UserController extends HttpServlet {
         } catch (Exception e) {
             checkError += "<br/> Invalid Birth Day.";
         }
-        
+
         UserDTO user = new UserDTO(userName, fullName, password, phone, email, BirthDay, address, phone, true);
-        
+
         if (checkError.isEmpty()) {
             if (udao.createUserWithWallet(user)) {
                 message = "Create Account successfully.";
@@ -119,11 +125,77 @@ public class UserController extends HttpServlet {
             }
         }
 
-            request.setAttribute("user", user);
-            request.setAttribute("checkError", checkError);
-            request.setAttribute("message", message);
+        request.setAttribute("user", user);
+        request.setAttribute("checkError", checkError);
+        request.setAttribute("message", message);
 
-        return "update.jsp";
+        return "registerForm.jsp";
+    }
+
+    private String handlePasswordChanging(HttpServletRequest request, HttpServletResponse response) {
+        String oldPass = request.getParameter("oldPassword");
+        String newPass = request.getParameter("newPassword");
+        String confirmPass = request.getParameter("confirmPassword");
+
+        HttpSession session = request.getSession();
+        UserDTO user = (UserDTO) session.getAttribute("user");
+
+        String checkError = "";
+        String message = "";
+
+        if (!newPass.equals(confirmPass)) {
+            checkError = "New password and confirmation do not match.";
+        } else if (!udao.checkPassword(user.getUserName(), oldPass)) {
+            checkError = "Current password is incorrect.";
+        } else {
+            boolean success = udao.updatePassword(user.getUserName(), newPass);
+            if (success) {
+                message = "Password updated successfully!";
+            } else {
+                checkError = "Failed to update password.";
+            }
+        }
+
+        request.setAttribute("checkError", checkError);
+        request.setAttribute("message", message);
+        return "changePassword.jsp";
+    }
+
+    private String handleProfileViewing(HttpServletRequest request, HttpServletResponse response) {
+        String userName = request.getParameter("userName");
+        WalletDTO wallet = wdao.getWalletByUserName(userName);
+        request.setAttribute("wallet", wallet);
+        return "userProfile.jsp";
+    }
+
+    private String handleUpdateProfile(HttpServletRequest request, HttpServletResponse response) {
+        String userName = request.getParameter("userName");
+        String fullName = request.getParameter("fullName");
+        String address = request.getParameter("address");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String birthDayStr = request.getParameter("birthDay");
+
+        Date birthDay = null;
+        if (birthDayStr != null && !birthDayStr.isEmpty()) {
+            try {
+                birthDay = Date.valueOf(birthDayStr);
+            } catch (Exception e) {
+                request.setAttribute("checkError", "Invalid birthdate.");
+                return "userProfile.jsp";
+            }
+        }
+
+        UserDTO user = new UserDTO(userName, fullName, "", phone, email, birthDay, address, phone, true);
+        boolean success = udao.updateUser(user);
+        if (success) {
+            request.getSession().setAttribute("user", user); // cập nhật session
+            request.setAttribute("message", "Profile updated successfully.");
+        } else {
+            request.setAttribute("checkError", "Update failed.");
+        }
+
+        return "userProfile.jsp";
     }
 
     private String handleLogin(HttpServletRequest request, HttpServletResponse response) {
@@ -159,14 +231,6 @@ public class UserController extends HttpServlet {
             }
         }
         return LOGIN_PAGE;
-    }
-
-    /*private String handleRegister(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }*/
-
-    private String handleUpdateProfile(HttpServletRequest request, HttpServletResponse response) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     private String handleViewActiveUsers(HttpServletRequest request, HttpServletResponse response) {

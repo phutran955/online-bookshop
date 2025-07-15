@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <c:set var="currentUser" value="${sessionScope.user}" />
 <c:set var="isLoggedIn" value="${not empty currentUser}" />
@@ -67,7 +68,7 @@
                                         <c:forEach var="w" items="${walletList}">
                                             <tr>                                            
                                                 <td>${w.userName}</td>
-                                                <td>VND ${w.balance}</td>
+                                                <td>VND <fmt:formatNumber value="${w.balance}" type="number" minFractionDigits="0" /></td>
 
                                                 <td>
                                                     <div class="action-buttons">

@@ -79,7 +79,7 @@
                                                 <td>${u.fullName}</td>
                                                 <td>${u.roleID}</td>
                                                 <td>${u.email}</td>
-                                                <td>Noooo</td>
+                                                <td><fmt:formatDate value="${u.birthDay}" pattern="dd/MM/yyyy" /></td>
                                                 <td>${u.address}</td>
                                                 <td>${u.phone}</td>
                                                 <td class="${u.status ? 'status-active' : 'status-inactive'}">

@@ -17,3 +17,34 @@
     display: block;
     border-radius: 8px;
 }
+
+
+.item-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.item-price .new-price {
+    color: #d60000;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.item-price .old-price {
+    color: #888;
+    text-decoration: line-through;
+    font-size: 1rem;
+}
+
+.item-price .discount-badge {
+    background-color: #d60000;
+    color: #fff;
+    font-size: 0.9rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+

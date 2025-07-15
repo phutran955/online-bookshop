@@ -7,6 +7,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 
 <c:set var="currentUser" value="${sessionScope.user}" />
 <c:set var="isLoggedIn" value="${not empty currentUser}" />
@@ -63,6 +65,7 @@
                                             <th>ID</th>
                                             <th>Image</th>
                                             <th>Name</th>
+                                            <th>Supplier Id</th>
                                             <th>Description</th>
                                             <th>Price (VND)</th>
                                             <th>Discount (%)</th>
@@ -81,13 +84,15 @@
                                                 <td>${product.productId}</td>
                                                 <td><img src="${product.image}" style="width: 80px;" alt="${item.product.productName}" /></td>
                                                 <td>${product.productName}</td>
+                                                <td>${product.supplier.supplierId}</td>
                                                 <td>${product.description}</td>
-                                                <td>VND ${product.unitPrice}</td>
-                                                <td>${product.discount * 100}%</td>
+                                                <td>VND <fmt:formatNumber value="${product.unitPrice}" type="number" minFractionDigits="0" /></td>
+                                                <td><fmt:formatNumber value="${product.discount * 100}" type="number" maxFractionDigits="0" />%</td>
                                                 <td>${product.author}</td>
                                                 <td>${product.unitsInStock}</td>
                                                 <td>${product.quantitySold}</td>
-                                                <td>${product.releaseDate}</td>
+                                                <td><fmt:formatDate value="${product.releaseDate}" pattern="dd/MM/yyyy" /></td>
+
                                                 <td class="${product.status ? 'status-active' : 'status-inactive'}">
                                                     ${product.status ? 'Active' : 'Inactive'}
                                                 </td>

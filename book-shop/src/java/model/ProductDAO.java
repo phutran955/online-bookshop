@@ -17,6 +17,9 @@ import utils.DbUtils;
  */
 public class ProductDAO {
 
+    CategoryDTO category = new CategoryDTO();
+    SupplierDTO supplier = new SupplierDTO();
+
     // SQL Queries
     private static final String GET_ALL_PRODUCTS = "SELECT ProductID, ProductName, Author, SupplierID, CategoryID, "
             + "UnitPrice, UnitsInStock, QuantitySold, Image, Description, "
@@ -58,12 +61,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -107,14 +108,12 @@ public class ProductDAO {
                 product.setReleaseDate(rs.getDate("ReleaseDate"));
                 product.setDiscount(rs.getDouble("Discount"));
                 product.setStatus(rs.getBoolean("Status"));
-                
+
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -158,12 +157,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -209,12 +206,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -260,12 +255,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -311,12 +304,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -324,6 +315,56 @@ public class ProductDAO {
             }
         } catch (Exception e) {
             System.err.println("Error in getProductsByStatus(): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
+
+    public List<ProductDTO> getTop4HighDiscountProducts() {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT TOP 4 * FROM tblProducts "
+                + "WHERE Discount >= 0.5 AND Status = 1 "
+                + "ORDER BY Discount DESC, ProductID DESC";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                int catID = rs.getInt("CategoryID");
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in getTop4HighDiscountProducts(): " + e.getMessage());
             e.printStackTrace();
         } finally {
             closeResources(conn, ps, rs);
@@ -361,12 +402,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -412,12 +451,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -433,6 +470,7 @@ public class ProductDAO {
         return products;
     }
 
+//PAGING
     public List<ProductDTO> getProductsByPage(int page, int pageSize) {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
@@ -465,12 +503,10 @@ public class ProductDAO {
                 product.setStatus(rs.getBoolean("Status"));
 
                 int catID = rs.getInt("CategoryID");
-                CategoryDTO category = new CategoryDTO();
                 category.setCategoryId(catID);
                 product.setCategory(category);
 
                 int supID = rs.getInt("SupplierID");
-                SupplierDTO supplier = new SupplierDTO();
                 supplier.setSupplierId(supID);
                 product.setSupplier(supplier);
 
@@ -509,6 +545,85 @@ public class ProductDAO {
         return count;
     }
 
+    public List<ProductDTO> getProductsByNameWithPaging(String keyword, int page, int pageSize) {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM tblProducts "
+                + "WHERE Status = 1 AND ProductName LIKE ? "
+                + "ORDER BY ProductID "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            ps.setInt(2, (page - 1) * pageSize);
+            ps.setInt(3, pageSize);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                // Set category and supplier (optional improvement: use joins or DAOs)
+                int catID = rs.getInt("CategoryID");
+                category.setCategoryId(catID);
+                product.setCategory(category);
+
+                int supID = rs.getInt("SupplierID");
+                supplier.setSupplierId(supID);
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
+
+    public int countProductsByName(String keyword) {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT COUNT(*) FROM tblProducts WHERE Status = 1 AND ProductName LIKE ?";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, "%" + keyword + "%");
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return count;
+    }
+
+    //CART
     public boolean updateStock(int productId, int newStock) {
         Connection conn = null;
         PreparedStatement ps = null;

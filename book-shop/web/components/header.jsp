@@ -83,7 +83,7 @@
             <div class="row">
                 <div class="col-md-2">
                     <div class="main-logo">
-                        <a href="MainController?action=home"><img src="assets/images/main-logo.png" alt="logo"></a>
+                        <a href="index.jsp"><img src="assets/images/main-logo.png" alt="logo"></a>
                     </div>
                 </div>
 
@@ -92,29 +92,23 @@
                         <div class="main-menu stellarnav">
                             <ul class="menu-list">
 
-                                <li class="menu-item"><a href="MainController?action=home" class="nav-link">Home</a></li>
+                                <li class="menu-item"><a href="index.jsp" class="nav-link">Home</a></li>
 
                                 <c:if test="${isAdmin}">
                                     <li class="menu-item"><a href="admin.jsp" class="nav-link">Admin</a></li>
-                                </c:if>
-
-                                <li class="menu-item"><a href="MainController?action=home" class="nav-link">Profile</a></li>
+                                    </c:if>                             
 
                                 <li class="menu-item has-sub">
-                                    <a href="#categories" class="nav-link">Categories</a>
+                                    <a href="user" class="nav-link">User</a>
                                     <ul>
-                                        <c:if test="${not empty listC}">
-                                            <c:forEach var="c" items="${listC}">
-                                                <li>
-                                                    <a href="MainController?action=viewCat&catID=${c.categoryId}">
-                                                        ${c.categoryName}
-                                                    </a>
-                                                </li>
-                                            </c:forEach>
-                                        </c:if>
+                                        <li><a href="login.jsp">Sign In</a></li>
+                                        <li><a href="MainController?action=logout">LogOut</a></li>
+                                        <li><a href="changePassword.jsp">Password</a></li>
                                     </ul>
                                 </li>
-                                <li class="menu-item"><a href="MainController?action=pagingProduct" class="nav-link">View All Products</a></li>
+
+                                <li class="menu-item"><a href="MainController?action=allProducts" class="nav-link">Categories</a></li>
+                                <li class="menu-item"><a href="MainController?action=profile&userName=${user.userName}" class="nav-link">Profile</a></li>
                             </ul>
 
                             <div class="hamburger">

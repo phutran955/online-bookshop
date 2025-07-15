@@ -7,6 +7,11 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<c:if test="${empty listP}">
+    <c:redirect url="MainController?action=home" />
+</c:if>
+
 <c:set var="isAdmin" value="${currentUser.roleID eq 'AD'}" />
 
 
@@ -51,7 +56,7 @@
                                             <div class="col-md-3">
                                                 <div class="product-item">
                                                     <figure class="product-style">
-                                                        <a href="MainController?action=viewProduct&id=${p.productId}">
+                                                        <a href="MainController?action=viewProduct&idP=${p.productId}&idS=${p.supplier.supplierId}">
                                                             <img src="${p.image}" alt="${p.productName}" class="product-item">
                                                         </a>
                                                         <form action="MainController" method="post">
@@ -61,11 +66,30 @@
                                                             <button type="submit" class="add-to-cart">Add to Cart</button>
                                                         </form>
                                                     </figure>
-                                                    <figcaption>
+                                                    <figcaption style="text-align: center;">
                                                         <h3>${p.productName}</h3>
-                                                        <div class="item-price">
-                                                            <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0"/> đ
-                                                        </div>
+                                                        <c:choose>
+                                                            <c:when test="${p.discount > 0}">
+                                                                <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 5px;">
+                                                                    <span style="color: #888; text-decoration: line-through; font-size: 1rem;">
+                                                                        <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                                    </span>
+                                                                    <span style="color: #d60000; font-size: 1.2rem; font-weight: bold;">
+                                                                        <fmt:formatNumber value="${p.salePrice}" type="number" minFractionDigits="0" /> đ
+                                                                    </span>
+                                                                    <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                                                        -<fmt:formatNumber value="${p.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                                    </span>
+                                                                </div>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <div style="margin-top: 5px;">
+                                                                    <span style="color: #000; font-size: 1.2rem; font-weight: bold;">
+                                                                        <fmt:formatNumber value="${p.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                                    </span>
+                                                                </div>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </figcaption>
                                                 </div>
                                             </div>
@@ -119,7 +143,7 @@
                                             <div class="col-md-3">
                                                 <div class="product-item">
                                                     <figure class="product-style">
-                                                        <a href="MainController?action=viewProduct&id=${a.productId}">
+                                                        <a href="MainController?action=viewProduct&idP=${a.productId}&idS=${a.supplier.supplierId}">
                                                             <img src="${a.image}" alt="${a.productName}" class="product-item">
                                                         </a>
                                                         <form action="MainController" method="post">
@@ -129,12 +153,33 @@
                                                             <button type="submit" class="add-to-cart">Add to Cart</button>
                                                         </form>
                                                     </figure>
-                                                    <figcaption>
-                                                        <h3>${a.productName}</h3>
-                                                        <div class="item-price">
-                                                            <fmt:formatNumber value="${a.unitPrice}" type="number" minFractionDigits="0"/> đ
-                                                        </div>
+                                                    <figcaption style="text-align: center;">
+                                                        <h3>${p.productName}</h3>
+                                                        <c:choose>
+                                                            <c:when test="${a.discount > 0}">
+                                                                <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 5px;">
+                                                                    <span style="color: #888; text-decoration: line-through; font-size: 1rem;">
+                                                                        <fmt:formatNumber value="${a.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                                    </span>
+                                                                    <span style="color: #d60000; font-size: 1.2rem; font-weight: bold;">
+                                                                        <fmt:formatNumber value="${a.salePrice}" type="number" minFractionDigits="0" /> đ
+                                                                    </span>
+                                                                    <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                                                        -<fmt:formatNumber value="${a.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                                    </span>
+                                                                </div>
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                <div style="margin-top: 5px;">
+                                                                    <span style="color: #000; font-size: 1.2rem; font-weight: bold;">
+                                                                        <fmt:formatNumber value="${a.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                                    </span>
+                                                                </div>
+                                                            </c:otherwise>
+                                                        </c:choose>
                                                     </figcaption>
+
+
                                                 </div>
                                             </div>
                                         </c:forEach>
@@ -146,6 +191,14 @@
                                     </c:otherwise>
                                 </c:choose>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="btn-wrap align-right">
+                            <a href="#" class="btn-accent-arrow">See More Special Offers<i
+                                    class="icon icon-ns-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -170,35 +223,7 @@
                 </div>
             </div>
         </section>
+        <script src="assets/js02/index.js" type="text/javascript"></script>
     </body>
     <jsp:include page = "components/footer.jsp"></jsp:include>
-    <script>
-        let loadCount = 0;
-
-        function getLastProductId() {
-            const newArrivals = document.querySelector('[data-section="new-arrivals"] #product-container');
-            const inputs = newArrivals.querySelectorAll('input[name="id"]');
-            if (inputs.length === 0)
-                return 0;
-            return inputs[inputs.length - 1].value;
-        }
-
-        document.getElementById("loadMoreBtn").addEventListener("click", function () {
-            const lastId = getLastProductId();
-
-            fetch("loadMore?lastId=" + lastId)
-                    .then(response => response.text())
-                    .then(html => {
-                        const newArrivals = document.querySelector('[data-section="new-arrivals"] #product-container');
-                        newArrivals.insertAdjacentHTML("beforeend", html);
-
-                        loadCount++;
-                        if (loadCount >= 2) {
-                            document.getElementById("loadMoreBtn").style.display = "none";
-                            document.getElementById("viewAllBtn").style.display = "inline-block";
-                        }
-                    })
-                    .catch(err => console.error("Load more failed:", err));
-        });
-    </script>
 </html>

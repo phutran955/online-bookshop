@@ -22,6 +22,63 @@ import utils.DbUtils;
 public class OrderDAO {
 
     UserDTO user = new UserDTO();
+    OrderDTO order = new OrderDTO();
+
+    public int getLatestOrderIdByUsername(String username) {
+        String sql = "SELECT TOP 1 OrderID FROM tblOrders WHERE UserName = ? AND Status = 0 ORDER BY OrderID DESC";
+        try ( Connection conn = DbUtils.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, username);
+            try ( ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("OrderID");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public OrderDTO getOrderById(int orderId) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT o.OrderID, o.Date, o.TotalMoney, o.Status, "
+                + "u.UserName, u.FullName, u.Email, u.BirthDay, u.Address, u.Phone "
+                + "FROM tblOrders o JOIN tblUsers u ON o.UserName = u.UserName "
+                + "WHERE o.OrderID = ? AND o.Status = 0";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, orderId);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                user.setUserName(rs.getString("UserName"));
+                user.setFullName(rs.getString("FullName"));
+                user.setEmail(rs.getString("Email"));
+                user.setBirthDay(rs.getDate("BirthDay"));
+                user.setAddress(rs.getString("Address"));
+                user.setPhone(rs.getString("Phone"));
+
+                order.setOrderId(rs.getInt("OrderID"));
+                order.setDate(rs.getDate("Date"));
+                order.setTotalMoney(rs.getDouble("TotalMoney"));
+                order.setStatus(rs.getBoolean("Status"));
+                order.setUser(user);
+
+                return order;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return null;
+    }
 
     public List<OrderDTO> getAllOrders() {
         List<OrderDTO> orders = new ArrayList<>();
@@ -42,7 +99,6 @@ public class OrderDAO {
                 order.setStatus(rs.getBoolean("Status"));
 
                 order.setTotalMoney(rs.getDouble("TotalMoney"));
-
 
                 String userName = rs.getString("UserName");
                 user.setUserName(userName);
