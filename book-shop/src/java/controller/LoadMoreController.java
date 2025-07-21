@@ -64,7 +64,7 @@ public class LoadMoreController extends HttpServlet {
                 out.println("          " + formatPrice(salePrice) + " đ");
                 out.println("        </span>");
                 out.println("        <span style=\"background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;\">");
-                out.println("          -" + Math.round(discount * 100) + "%");
+                out.println("          -" + Math.round(discount) + "%");
                 out.println("        </span>");
                 out.println("      </div>");
             } else {

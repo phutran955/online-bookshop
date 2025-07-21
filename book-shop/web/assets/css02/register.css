@@ -1,0 +1,175 @@
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f6f8;
+}
+
+.home-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px; /* 👈 Put it on the right instead of left */
+    font-size: 24px;
+    color: #333;
+    text-decoration: none;
+    z-index: 10;
+    transition: color 0.3s ease;
+}
+
+.home-icon:hover {
+    color: #007bff;
+}
+
+/* Container layout */
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Left panel */
+.left-panel {
+    flex: 1;
+    background: url(https://perhapsmaybenot.com/wp-content/uploads/2022/10/Booktok.png) no-repeat center center;
+    background-size: cover;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.left-panel h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.left-panel p {
+    font-size: 20px;
+    font-weight: 300;
+}
+
+/* Right panel */
+.right-panel {
+    flex: 1;
+    background: #fff;
+    padding: 60px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Form styling */
+form {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+form h2 {
+    margin-bottom: 30px;
+    font-size: 32px;
+    color: #333;
+}
+
+
+/* Form group with icon support */
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 40px 12px 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    box-sizing: border-box;
+}
+
+.form-group i {
+    position: absolute;
+    left: 12px;
+    top: 40px;
+    font-size: 16px;
+    color: #777;
+    pointer-events: none;
+}
+
+.form-input {
+    width: 100%;
+    padding: 15px 45px 15px 15px;
+    padding-left: 40px !important;
+    border: 2px solid #e8e8e8;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+/* Buttons */
+form input[type="submit"],
+form input[type="reset"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background-color: #2f4f4f;
+    color: white;
+    transition: background-color 0.3s;
+}
+
+form input[type="reset"] {
+    background-color: #888;
+}
+
+form input[type="submit"]:hover {
+    background-color: #1e3939;
+}
+
+form a {
+    display: block;
+    margin-top: 10px;
+    color: #3a3a3a;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: center;
+}
+
+form a:hover {
+    text-decoration: underline;
+}
+
+/* Message styles */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.success-message {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 65%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+

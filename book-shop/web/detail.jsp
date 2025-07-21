@@ -55,7 +55,7 @@
                                                 <fmt:formatNumber value="${p.salePrice}" type="number" minFractionDigits="0" /> đ
                                             </span>
                                             <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                                -<fmt:formatNumber value="${p.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                -<fmt:formatNumber value="${p.discount}" type="number" maxFractionDigits="0" />%
                                             </span>
                                         </div>
                                     </c:when>

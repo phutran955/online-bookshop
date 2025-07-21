@@ -11,12 +11,24 @@
         <link href="assets/css02/cart.css" rel="stylesheet" type="text/css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
+
     <body>
         <jsp:include page="components/header.jsp"/>
 
         <div class="container my-5">
-            <div class="cart-container">
+            <c:if test="${not empty checkError}">
+                <div class="error-message" style="color: #721c24;">
+                    ${checkError}
+                </div>
+            </c:if>
 
+            <c:if test="${empty checkError && not empty message}">
+                <div class="success-message" style="color: #00cc33;">
+                    ${message}
+                </div>
+            </c:if>
+
+            <div class="cart-container">
                 <!-- Left: Cart Items -->
                 <div class="cart-items">
                     <table class="table table-bordered text-center align-middle">
@@ -97,7 +109,7 @@
                             <span><fmt:formatNumber value="${subtotal - totalDiscount}" type="number" maxFractionDigits="0"/> đ</span>
                         </div>
                     </div>
- 
+
                     <a href="MainController?action=checkOut" class="btn btn-dark w-100 mt-3">CHECKOUT</a>
                 </div>
             </div>

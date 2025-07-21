@@ -56,4 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.totals div:nth-child(2) span:nth-child(2)').textContent = totalDiscount.toLocaleString('vi-VN') + ' đ';
         document.querySelector('.totals .total span:nth-child(2)').textContent = total.toLocaleString('vi-VN') + ' đ';
     }
+    
+    
+
 });

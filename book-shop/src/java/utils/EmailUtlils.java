@@ -24,30 +24,44 @@ public class EmailUtlils {
         StringBuilder html = new StringBuilder();
         html.append("<html><body style='font-family:Arial,sans-serif;'>");
 
-        html.append("<h2 style='color:#2e6c80;'>Xác nhận đơn hàng #" + order.getOrderId() + "</h2>");
-        html.append("<p>Xin chào <strong>").append(user.getFullName()).append("</strong>,</p>");
-        html.append("<p>Cảm ơn bạn đã đặt hàng tại cửa hàng của chúng tôi!</p>");
+        html.append("<h2 style='color:#2e6c80;'>Order Confirmation #" + order.getOrderId() + "</h2>");
+        html.append("<p>Hello <strong>").append(user.getFullName()).append("</strong>,</p>");
+        html.append("<p>Thank you for your order at our store!</p>");
 
-        html.append("<h3>Thông tin đơn hàng:</h3>");
+        html.append("<h3>Order Details:</h3>");
         html.append("<table style='border-collapse:collapse;'>");
-        html.append("<tr><td><strong>Mã đơn hàng:</strong></td><td>#").append(order.getOrderId()).append("</td></tr>");
-        html.append("<tr><td><strong>Ngày đặt:</strong></td><td>").append(sdf.format(order.getDate())).append("</td></tr>");
-        html.append("<tr><td><strong>Tổng tiền:</strong></td><td>").append(String.format("%,.0f", order.getTotalMoney())).append(" VND</td></tr>");
-        html.append("<tr><td><strong>Trạng thái:</strong></td><td>").append(order.isStatus() ? "Đã xử lý" : "Chưa xử lý").append("</td></tr>");
+        html.append("<tr><td><strong>Order ID:</strong></td><td>#").append(order.getOrderId()).append("</td></tr>");
+        html.append("<tr><td><strong>Order Date:</strong></td><td>").append(sdf.format(order.getDate())).append("</td></tr>");
+        html.append("<tr><td><strong>Total Amount:</strong></td><td>").append(String.format("%,.0f", order.getTotalMoney())).append(" VND</td></tr>");
+        html.append("<tr><td><strong>Status:</strong></td><td>").append(order.isStatus() ? "Processed" : "Unprocessed").append("</td></tr>");
         html.append("</table>");
 
-        html.append("<h3>Thông tin khách hàng:</h3>");
+        html.append("<h3>Customer Information:</h3>");
         html.append("<table style='border-collapse:collapse;'>");
-        html.append("<tr><td><strong>Tên đăng nhập:</strong></td><td>").append(user.getUserName()).append("</td></tr>");
-        html.append("<tr><td><strong>Họ tên:</strong></td><td>").append(user.getFullName()).append("</td></tr>");
+        html.append("<tr><td><strong>Username:</strong></td><td>").append(user.getUserName()).append("</td></tr>");
+        html.append("<tr><td><strong>Full Name:</strong></td><td>").append(user.getFullName()).append("</td></tr>");
         html.append("<tr><td><strong>Email:</strong></td><td>").append(user.getEmail()).append("</td></tr>");
-        html.append("<tr><td><strong>Ngày sinh:</strong></td><td>").append(sdf.format(user.getBirthDay())).append("</td></tr>");
-        html.append("<tr><td><strong>Điện thoại:</strong></td><td>").append(user.getPhone()).append("</td></tr>");
-        html.append("<tr><td><strong>Địa chỉ:</strong></td><td>").append(user.getAddress()).append("</td></tr>");
+        html.append("<tr><td><strong>Date of Birth:</strong></td><td>").append(sdf.format(user.getBirthDay())).append("</td></tr>");
+        html.append("<tr><td><strong>Phone:</strong></td><td>").append(user.getPhone()).append("</td></tr>");
+        html.append("<tr><td><strong>Address:</strong></td><td>").append(user.getAddress()).append("</td></tr>");
         html.append("</table>");
 
-        html.append("<p style='margin-top:20px;'>Đơn hàng của bạn sẽ được xử lý trong thời gian sớm nhất.</p>");
-        html.append("<p style='color:gray;font-size:12px;'>Vui lòng không phản hồi email này.</p>");
+        html.append("<p style='margin-top:20px;'>Your order will be processed as soon as possible.</p>");
+        html.append("<p style='color:gray;font-size:12px;'>Please do not reply to this email.</p>");
+        html.append("</body></html>");
+
+        return html.toString();
+    }
+
+    public static String generateOrderStatusUpdatedEmail(UserDTO user, OrderDTO order) {
+        StringBuilder html = new StringBuilder();
+
+        html.append("<html><body style='font-family:Arial,sans-serif;'>");
+        html.append("<h2 style='color:#2e6c80;'>Order Status Updated</h2>");
+        html.append("<p>Hello <strong>").append(user.getFullName()).append("</strong>,</p>");
+        html.append("<p>Your order <strong>#").append(order.getOrderId()).append("</strong> has been <span style='color:green;'>processed successfully</span>.</p>");
+        html.append("<p>Thank you for shopping with us!</p>");
+        html.append("<p style='color:gray;font-size:12px;'>Please do not reply to this email.</p>");
         html.append("</body></html>");
 
         return html.toString();

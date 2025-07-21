@@ -9,9 +9,9 @@
         <jsp:include page="components/link.jsp" />
         <link rel="stylesheet" href="assets/css02/display.css">
     </head>
-    <jsp:include page="components/header.jsp" />
 
     <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
+        <jsp:include page="components/header.jsp" />
         <section class="main-wrapper my-5">
 
             <!-- Left: Category List + Price Filter -->
@@ -62,7 +62,7 @@
                                                         <fmt:formatNumber value="${p.salePrice}" type="number" minFractionDigits="0" /> đ
                                                     </span>
                                                     <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                                        -<fmt:formatNumber value="${p.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                        -<fmt:formatNumber value="${p.discount}" type="number" maxFractionDigits="0" />%
                                                     </span>
                                                 </div>
                                             </c:when>

@@ -8,6 +8,8 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <c:set var="currentUser" value="${sessionScope.user}" />
+<c:set var="isLoggedIn" value="${not empty currentUser}" />
+<c:set var="isLoggedOut" value = "${empty currentUser}" />
 <c:set var="isAdmin" value="${currentUser.roleID eq 'AD'}" />
 
 <c:set var="keyword" value="${requestScope.keyword}" />
@@ -41,7 +43,7 @@
                     <div class="right-element">
                         <c:choose>
                             <c:when test="${not empty sessionScope.user}">
-                                <a href="userAccount.jsp" class="user-account for-buy">  
+                                <a href="MainController?action=profile&userName=${user.userName}" class="user-account for-buy">  
                                     <i class="icon icon-user"></i><span>${sessionScope.user.fullName}</span>
                                 </a>
                                 <a href="MainController?action=logout" class="logout for-buy">
@@ -94,21 +96,26 @@
 
                                 <li class="menu-item"><a href="index.jsp" class="nav-link">Home</a></li>
 
-                                <c:if test="${isAdmin}">
-                                    <li class="menu-item"><a href="admin.jsp" class="nav-link">Admin</a></li>
-                                    </c:if>                             
-
                                 <li class="menu-item has-sub">
-                                    <a href="user" class="nav-link">User</a>
+                                    <a href="MainController?action=profile&userName=${user.userName}" class="nav-link">Profile</a>
                                     <ul>
-                                        <li><a href="login.jsp">Sign In</a></li>
-                                        <li><a href="MainController?action=logout">LogOut</a></li>
-                                        <li><a href="changePassword.jsp">Password</a></li>
+                                        <c:if test="${isLoggedOut}">
+                                            <li><a href="login.jsp">Sign In</a></li>
+                                            <li><a href="registerForm.jsp">Sign Up</a></li>
+                                            </c:if> 
+                                            <c:if test="${isLoggedIn}">
+                                            <li><a href="MainController?action=logout">LogOut</a></li>
+                                            <li><a href="changePassword.jsp">Account Security</a></li>
+                                            </c:if> 
                                     </ul>
                                 </li>
+                                
+                                <li class="menu-item"><a href="MainController?action=allProducts" class="nav-link">Collections</a></li> 
+                                
+                                    <c:if test="${isAdmin}">
+                                    <li class="menu-item"><a href="admin.jsp" class="nav-link">Admin</a></li>
+                                    </c:if>       
 
-                                <li class="menu-item"><a href="MainController?action=allProducts" class="nav-link">Categories</a></li>
-                                <li class="menu-item"><a href="MainController?action=profile&userName=${user.userName}" class="nav-link">Profile</a></li>
                             </ul>
 
                             <div class="hamburger">

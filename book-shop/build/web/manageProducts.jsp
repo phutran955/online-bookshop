@@ -87,7 +87,7 @@
                                                 <td>${product.supplier.supplierId}</td>
                                                 <td>${product.description}</td>
                                                 <td>VND <fmt:formatNumber value="${product.unitPrice}" type="number" minFractionDigits="0" /></td>
-                                                <td><fmt:formatNumber value="${product.discount * 100}" type="number" maxFractionDigits="0" />%</td>
+                                                <td><fmt:formatNumber value="${product.discount}" type="number" maxFractionDigits="0" />%</td>
                                                 <td>${product.author}</td>
                                                 <td>${product.unitsInStock}</td>
                                                 <td>${product.quantitySold}</td>

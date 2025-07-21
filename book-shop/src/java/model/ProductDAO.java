@@ -323,13 +323,13 @@ public class ProductDAO {
         return products;
     }
 
-    public List<ProductDTO> getTop4HighDiscountProducts() {
+    public List<ProductDTO> getTop8HighDiscountProducts() {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String sql = "SELECT TOP 4 * FROM tblProducts "
+        String sql = "SELECT TOP 8 * FROM tblProducts "
                 + "WHERE Discount >= 0.5 AND Status = 1 "
                 + "ORDER BY Discount DESC, ProductID DESC";
 
@@ -373,13 +373,62 @@ public class ProductDAO {
         return products;
     }
 
-    public List<ProductDTO> get4NewestProducts() {
+    public List<ProductDTO> getAllDiscountedProducts() {
         List<ProductDTO> products = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
 
-        String sql = "SELECT TOP 4 * FROM tblProducts WHERE Status = 1 ORDER BY ProductID DESC";
+        String sql = "SELECT * FROM tblProducts WHERE Discount > 0 AND Status = 1 ORDER BY Discount DESC, ProductID DESC";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                // Set category and supplier
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(rs.getInt("CategoryID"));
+                product.setCategory(category);
+
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(rs.getInt("SupplierID"));
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            System.err.println("Error in getAllDiscountedProducts(): " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
+
+    public List<ProductDTO> get8NewestProducts() {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT TOP 8 * FROM tblProducts WHERE Status = 1 ORDER BY ProductID DESC";
 
         try {
             conn = DbUtils.getConnection();
@@ -610,6 +659,82 @@ public class ProductDAO {
             conn = DbUtils.getConnection();
             ps = conn.prepareStatement(sql);
             ps.setString(1, "%" + keyword + "%");
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return count;
+    }
+
+    public List<ProductDTO> getDiscountedProductsWithPaging(int page, int pageSize) {
+        List<ProductDTO> products = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM tblProducts "
+                + "WHERE Status = 1 AND Discount > 0 "
+                + "ORDER BY ProductID "
+                + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, (page - 1) * pageSize);
+            ps.setInt(2, pageSize);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ProductDTO product = new ProductDTO();
+                product.setProductId(rs.getInt("ProductID"));
+                product.setProductName(rs.getString("ProductName"));
+                product.setAuthor(rs.getString("Author"));
+                product.setUnitPrice(rs.getDouble("UnitPrice"));
+                product.setUnitsInStock(rs.getInt("UnitsInStock"));
+                product.setQuantitySold(rs.getInt("QuantitySold"));
+                product.setImage(rs.getString("Image"));
+                product.setDescription(rs.getString("Description"));
+                product.setReleaseDate(rs.getDate("ReleaseDate"));
+                product.setDiscount(rs.getDouble("Discount"));
+                product.setStatus(rs.getBoolean("Status"));
+
+                // Fix: initialize category and supplier
+                CategoryDTO category = new CategoryDTO();
+                category.setCategoryId(rs.getInt("CategoryID"));
+                product.setCategory(category);
+
+                SupplierDTO supplier = new SupplierDTO();
+                supplier.setSupplierId(rs.getInt("SupplierID"));
+                product.setSupplier(supplier);
+
+                products.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, ps, rs);
+        }
+
+        return products;
+    }
+
+    public int countDiscountedProducts() {
+        int count = 0;
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT COUNT(*) FROM tblProducts WHERE Status = 1 AND Discount > 0";
+
+        try {
+            conn = DbUtils.getConnection();
+            ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             if (rs.next()) {
                 count = rs.getInt(1);

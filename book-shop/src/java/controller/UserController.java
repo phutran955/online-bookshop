@@ -56,13 +56,10 @@ public class UserController extends HttpServlet {
 //admin
             } else if ("viewUsers".equals(action)) {
                 url = handleViewActiveUsers(request, response);
-
             } else if ("searchUsers".equals(action)) {
                 url = handleAdminUsersSearching(request, response);
-
             } else if ("changeUserStatus".equals(action)) {
                 url = handleChangeUserStatus(request, response);
-
             } else {
                 request.setAttribute("message", "Invalid action: " + action);
                 url = LOGIN_PAGE;
@@ -89,6 +86,10 @@ public class UserController extends HttpServlet {
             checkError += "<br/>Username is required.";
         }
 
+        if (udao.getUserByUserName(userName) != null) {
+            checkError += "<br/>This Username already exists, please choose another Username.";
+        }
+
         if (fullName == null || fullName.trim().isEmpty()) {
             checkError += "<br/>Full Name is required.";
         }
@@ -98,7 +99,7 @@ public class UserController extends HttpServlet {
         }
 
         if (!password.equals(confirmPass)) {
-            checkError = "password and confirmation do not match.";
+            checkError += "<br/>Password and confirmation do not match.";
         }
 
         Date BirthDay = null;
@@ -115,7 +116,13 @@ public class UserController extends HttpServlet {
             checkError += "<br/> Invalid Birth Day.";
         }
 
-        UserDTO user = new UserDTO(userName, fullName, password, phone, email, BirthDay, address, phone, true);
+        // Encrypt password only if no validation errors
+        String encryptedPassword = password;
+        if (checkError.isEmpty()) {
+            encryptedPassword = PasswordUtlis.encryptSHA256(password);
+        }
+
+        UserDTO user = new UserDTO(userName, fullName, encryptedPassword, phone, email, BirthDay, address, phone, true);
 
         if (checkError.isEmpty()) {
             if (udao.createUserWithWallet(user)) {
@@ -145,14 +152,18 @@ public class UserController extends HttpServlet {
 
         if (!newPass.equals(confirmPass)) {
             checkError = "New password and confirmation do not match.";
-        } else if (!udao.checkPassword(user.getUserName(), oldPass)) {
-            checkError = "Current password is incorrect.";
         } else {
-            boolean success = udao.updatePassword(user.getUserName(), newPass);
-            if (success) {
-                message = "Password updated successfully!";
+            String oldHash = PasswordUtlis.encryptSHA256(oldPass);
+            if (!udao.checkPassword(user.getUserName(), oldHash)) {
+                checkError = "Current password is incorrect.";
             } else {
-                checkError = "Failed to update password.";
+                String newHash = PasswordUtlis.encryptSHA256(newPass);
+                boolean success = udao.updatePassword(user.getUserName(), newHash);
+                if (success) {
+                    message = "Password updated successfully!";
+                } else {
+                    checkError = "Failed to update password.";
+                }
             }
         }
 
@@ -205,7 +216,7 @@ public class UserController extends HttpServlet {
         HttpSession session = request.getSession();
         String username = request.getParameter("strUserName");
         String password = request.getParameter("strPassword");
-        //password = PasswordUtlis.encryptSHA256(password);
+        password = PasswordUtlis.encryptSHA256(password);
 
         if (udao.login(username, password)) {
             url = "index.jsp"; //success

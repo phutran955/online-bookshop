@@ -40,32 +40,26 @@ public class ProductController extends HttpServlet {
 
             if (action.equals("viewProduct")) {
                 url = handleViewSingleProduct(request, response);
-
             } else if (action.equals("searchProduct")) {
                 url = handleProductSearching(request, response);
-
             } else if (action.equals("allProducts")) {
                 url = handleShowProductsByPaging(request, response);
+            } else if (action.equals("allDiscounts")) {
+                url = handlAllDiscountViewing(request, response);
 
                 //Admin
             } else if (action.equals("viewProducts")) {
                 url = handleviewActiveProducts(request, response);
-
             } else if (action.equals("addProduct")) {
                 url = handleProductAdding(request, response);
-
             } else if (action.equals("updateProduct")) {
                 url = handleProductUpdating(request, response);
-
             } else if (action.equals("editProduct")) {
                 url = handleProductEditing(request, response);
-
             } else if (action.equals("changeProductStatus")) {
                 url = handleProductStatusChanging(request, response);
-
             } else if (action.equals("adminSearch")) {
                 url = handleAdminProductSearching(request, response);
-
             } else if (action.equals("home")) {
                 url = handleHome(request, response);
             }
@@ -76,8 +70,8 @@ public class ProductController extends HttpServlet {
     }
 
     private String handleHome(HttpServletRequest request, HttpServletResponse response) {
-        List<ProductDTO> listP = pdao.get4NewestProducts();
-        List<ProductDTO> listAll = pdao.getTop4HighDiscountProducts();
+        List<ProductDTO> listP = pdao.get8NewestProducts();
+        List<ProductDTO> listAll = pdao.getTop8HighDiscountProducts();
 
         request.setAttribute("listP", listP);
         request.setAttribute("listAll", listAll);
@@ -98,7 +92,6 @@ public class ProductController extends HttpServlet {
         final int PAGE_SIZE = 12;
         int page = 1;
 
-        // Get current page
         try {
             String pageParam = request.getParameter("page");
             if (pageParam != null && !pageParam.isEmpty()) {
@@ -113,22 +106,44 @@ public class ProductController extends HttpServlet {
             keyword = "";
         }
 
-        // Get total products matching the keyword
         int totalProducts = pdao.countProductsByName(keyword);
         int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
-
-        // Get paginated search results
         List<ProductDTO> listByName = pdao.getProductsByNameWithPaging(keyword, page, PAGE_SIZE);
-
-        // Get categories if needed for filter/sidebar
         List<CategoryDTO> listC = cdao.getAllCategory();
 
-        // Set attributes
         request.setAttribute("listP", listByName);
         request.setAttribute("keyword", keyword);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("listC", listC);
+
+        return "productsDisplay.jsp";
+    }
+
+    private String handlAllDiscountViewing(HttpServletRequest request, HttpServletResponse response) {
+        final int PAGE_SIZE = 12;
+        int page = 1;
+
+        try {
+            String pageParam = request.getParameter("page");
+            if (pageParam != null && !pageParam.isEmpty()) {
+                page = Integer.parseInt(pageParam);
+            }
+        } catch (NumberFormatException e) {
+            page = 1;
+        }
+
+        int totalProducts = pdao.countDiscountedProducts();
+        int totalPages = (int) Math.ceil((double) totalProducts / PAGE_SIZE);
+
+        List<ProductDTO> discountedList = pdao.getDiscountedProductsWithPaging(page, PAGE_SIZE);
+        List<CategoryDTO> listC = cdao.getAllCategory();
+
+        request.setAttribute("listP", discountedList);
+        request.setAttribute("currentPage", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("listC", listC);
+        request.setAttribute("discountFilter", true); // Optional: to indicate this is a discount page
 
         return "productsDisplay.jsp";
     }

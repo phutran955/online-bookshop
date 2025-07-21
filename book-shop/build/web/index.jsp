@@ -23,18 +23,20 @@
         <jsp:include page = "components/link.jsp"></jsp:include>
             <link rel="stylesheet" href="assets/css02/index.css">
         </head>
-    <jsp:include page = "components/header.jsp"></jsp:include>
 
         <body data-bs-spy="scroll" data-bs-target="#header" tabindex="0">
-
+        <jsp:include page = "components/header.jsp"></jsp:include>
             <!-- Banner -->
             <section id="promo-banner">
                 <div class="banner-wrapper">
-                    <img src="assets/images/Blue Green Summer Super Sale Banner.png"
-                         alt="Big Sale Banner"
-                         class="banner-image">
+                    <a href="#special-offer">
+                        <img src="assets/images/Blue Green Summer Super Sale Banner.png"
+                             alt="Big Sale Banner"
+                             class="banner-image">
+                    </a>
                 </div>
             </section>
+
 
 
             <!-- New Arrivals -->
@@ -78,7 +80,7 @@
                                                                         <fmt:formatNumber value="${p.salePrice}" type="number" minFractionDigits="0" /> đ
                                                                     </span>
                                                                     <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                                                        -<fmt:formatNumber value="${p.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                                        -<fmt:formatNumber value="${p.discount}" type="number" maxFractionDigits="0" />%
                                                                     </span>
                                                                 </div>
                                                             </c:when>
@@ -113,7 +115,7 @@
                                 View More <i class="icon icon-ns-arrow-right"></i>
                             </a>
 
-                            <a id="viewAllBtn" href="MainController?action=pagingProduct" class="btn-accent-arrow" style="display: none;">
+                            <a id="viewAllBtn" href="MainController?action=allProducts" class="btn-accent-arrow" style="display: none;">
                                 View all products <i class="icon icon-ns-arrow-right"></i>
                             </a>
                         </div>
@@ -139,47 +141,45 @@
                             <div class="row" id="product-container">
                                 <c:choose>
                                     <c:when test="${not empty listAll}">
-                                        <c:forEach var="a" items="${listAll}">
+                                        <c:forEach var="d" items="${listAll}">
                                             <div class="col-md-3">
                                                 <div class="product-item">
                                                     <figure class="product-style">
-                                                        <a href="MainController?action=viewProduct&idP=${a.productId}&idS=${a.supplier.supplierId}">
-                                                            <img src="${a.image}" alt="${a.productName}" class="product-item">
+                                                        <a href="MainController?action=viewProduct&idP=${d.productId}&idS=${d.supplier.supplierId}">
+                                                            <img src="${d.image}" alt="${d.productName}" class="product-item">
                                                         </a>
                                                         <form action="MainController" method="post">
                                                             <input type="hidden" name="action" value="addToCart">
-                                                            <input type="hidden" name="id" value="${a.productId}">
+                                                            <input type="hidden" name="id" value="${d.productId}">
                                                             <input type="hidden" name="qty" value="1">
                                                             <button type="submit" class="add-to-cart">Add to Cart</button>
                                                         </form>
                                                     </figure>
                                                     <figcaption style="text-align: center;">
-                                                        <h3>${p.productName}</h3>
+                                                        <h3>${d.productName}</h3>
                                                         <c:choose>
-                                                            <c:when test="${a.discount > 0}">
+                                                            <c:when test="${d.discount > 0}">
                                                                 <div style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 5px;">
                                                                     <span style="color: #888; text-decoration: line-through; font-size: 1rem;">
-                                                                        <fmt:formatNumber value="${a.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                                        <fmt:formatNumber value="${d.unitPrice}" type="number" minFractionDigits="0" /> đ
                                                                     </span>
                                                                     <span style="color: #d60000; font-size: 1.2rem; font-weight: bold;">
-                                                                        <fmt:formatNumber value="${a.salePrice}" type="number" minFractionDigits="0" /> đ
+                                                                        <fmt:formatNumber value="${d.salePrice}" type="number" minFractionDigits="0" /> đ
                                                                     </span>
                                                                     <span style="background-color: #d60000; color: #fff; font-size: 0.9rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
-                                                                        -<fmt:formatNumber value="${a.discount * 100}" type="number" maxFractionDigits="0" />%
+                                                                        -<fmt:formatNumber value="${d.discount}" type="number" maxFractionDigits="0" />%
                                                                     </span>
                                                                 </div>
                                                             </c:when>
                                                             <c:otherwise>
                                                                 <div style="margin-top: 5px;">
                                                                     <span style="color: #000; font-size: 1.2rem; font-weight: bold;">
-                                                                        <fmt:formatNumber value="${a.unitPrice}" type="number" minFractionDigits="0" /> đ
+                                                                        <fmt:formatNumber value="${d.unitPrice}" type="number" minFractionDigits="0" /> đ
                                                                     </span>
                                                                 </div>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </figcaption>
-
-
                                                 </div>
                                             </div>
                                         </c:forEach>
@@ -197,7 +197,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="btn-wrap align-right">
-                            <a href="#" class="btn-accent-arrow">See More Special Offers<i
+                            <a href="MainController?action=allDiscounts" class="btn-accent-arrow">See More Special Offers<i
                                     class="icon icon-ns-arrow-right"></i></a>
                         </div>
                     </div>
@@ -207,6 +207,10 @@
 
         <!-- Supplier -->
         <section id="client-holder" data-aos="fade-up">
+            <div class="section-header align-center">
+                <h2 class="section-title">Our Suppliers</h2>
+            </div>
+
             <div class="container">
                 <div class="row">
                     <div class="inner-content">
@@ -223,7 +227,7 @@
                 </div>
             </div>
         </section>
+        <jsp:include page = "components/footer.jsp"></jsp:include>
         <script src="assets/js02/index.js" type="text/javascript"></script>
     </body>
-    <jsp:include page = "components/footer.jsp"></jsp:include>
 </html>

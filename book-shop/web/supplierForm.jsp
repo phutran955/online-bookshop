@@ -40,35 +40,30 @@
                                 </div>
                             </c:if>
 
-                            <!-- Company Name -->
                             <div class="form-group">
                                 <label for="companyName">Company Name <span class="required">*</span></label>
                                 <input type="text" id="companyName" name="companyName" required autocomplete="off"
                                        value="${s.companyName != null ? s.companyName : ''}" />
                             </div>
 
-                            <!-- Contact Name -->
                             <div class="form-group">
                                 <label for="contactName">Contact Name <span class="required">*</span></label>
                                 <input type="text" id="contactName" name="contactName" required autocomplete="off"
                                        value="${s.contactName != null ? s.contactName : ''}" />
                             </div>
 
-                            <!-- Country -->
                             <div class="form-group">
                                 <label for="country">Country <span class="required">*</span></label>
                                 <input type="text" id="country" name="country" required autocomplete="off"
                                        value="${s.country != null ? s.country : ''}" />
                             </div>
 
-                            <!-- Phone -->
                             <div class="form-group">
                                 <label for="phone">Phone <span class="required">*</span></label>
                                 <input type="text" id="phone" name="phone" required autocomplete="off"
                                        value="${s.phone != null ? s.phone : ''}" />
                             </div>
 
-                            <!-- HomePage -->
                             <div class="form-group">
                                 <label for="homePage">HomePage <span class="required">*</span></label>
                                 <input type="text" id="homePage" name="homePage" required autocomplete="off"
@@ -82,7 +77,6 @@
                             </div>
                         </form>
 
-                        <!-- Error or success messages -->
                         <c:if test="${not empty checkError}">
                             <div class="error-message">${checkError}</div>
                         </c:if>

@@ -117,7 +117,7 @@ public class UserDAO {
             // 2. Thêm ví
             psWallet = conn.prepareStatement(sqlInsertWallet);
             psWallet.setString(1, user.getUserName());
-            psWallet.setDouble(2, 0.0); // hoặc số dư mặc định khác
+            psWallet.setDouble(2, 200000);//balance
             int rowsWallet = psWallet.executeUpdate();
             if (rowsWallet == 0) {
                 throw new SQLException("Failed to insert wallet.");
@@ -198,7 +198,7 @@ public class UserDAO {
         try {
             conn = DbUtils.getConnection();
             ps = conn.prepareStatement(sql);
-            ps.setString(1, "%" + uname + "%"); // đúng cú pháp LIKE
+            ps.setString(1, "%" + uname + "%");
 
             rs = ps.executeQuery();
 
@@ -217,7 +217,7 @@ public class UserDAO {
                 userList.add(user);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // nên in chi tiết lỗi để debug
+            e.printStackTrace(); // 
         } finally {
             closeResources(conn, ps, rs);
         }

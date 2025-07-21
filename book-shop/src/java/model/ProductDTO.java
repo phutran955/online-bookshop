@@ -164,7 +164,7 @@ public class ProductDTO {
 
     public double getSalePrice() {
         if (discount > 0) {
-            double salePrice = unitPrice * (1 - discount);
+            double salePrice = unitPrice * (1 - (discount/100));
             return Math.round(salePrice * 100.0) / 100.0;
         } else {
             return unitPrice;
