@@ -15,9 +15,7 @@
                 <div class="footer-item">
                     <div class="company-brand">
                         <img src="assets/images/main-logo.png" alt="logo" class="footer-logo">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sagittis sed ptibus liberolectus
-                            nonet psryroin. Amet sed lorem posuere sit iaculis amet, ac urna. Adipiscing fames
-                            semper erat ac in suspendisse iaculis.</p>
+                        <p>A bookstore online.</p>
                     </div>
                 </div>
 
@@ -31,15 +29,7 @@
                         <li class="menu-item">
                             <a href="#">vision</a>
                         </li>
-                        <li class="menu-item">
-                            <a href="#">articles </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#">careers</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#">service terms</a>
-                        </li>
+                        
                         <li class="menu-item">
                             <a href="#">donate</a>
                         </li>
@@ -53,20 +43,12 @@
                     <h5>Discover</h5>
                     <ul class="menu-list">
                         <li class="menu-item">
-                            <a href="#">Home</a>
+                            <a href="index.jsp">Home</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#">Books</a>
+                            <a href="MainController?action=allProducts">Books</a>
                         </li>
-                        <li class="menu-item">
-                            <a href="#">Authors</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#">Subjects</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#">Advanced Search</a>
-                        </li>
+                       
                     </ul>
                 </div>
 
@@ -77,17 +59,12 @@
                     <h5>My account</h5>
                     <ul class="menu-list">
                         <li class="menu-item">
-                            <a href="#">Sign In</a>
+                            <a href="login.jsp">Sign In</a>
                         </li>
                         <li class="menu-item">
-                            <a href="#">View Cart</a>
+                            <a href="MainController?action=viewCart">View Cart</a>
                         </li>
-                        <li class="menu-item">
-                            <a href="#">My Wishtlist</a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#">Track My Order</a>
-                        </li>
+                   
                     </ul>
                 </div>
 

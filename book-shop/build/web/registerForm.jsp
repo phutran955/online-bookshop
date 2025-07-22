@@ -43,19 +43,16 @@
                             <div class="form-group">
                                 <label for="userName">Username *</label>
                                 <input type="text" id="userName" name="userName" required value="${user.userName}" />
-                                <i class="fa fa-user"></i>
                             </div>
 
                             <div class="form-group">
                                 <label for="fullName">Full Name *</label>
                                 <input type="text" id="fullName" name="fullName" required value="${user.fullName}" />
-                                <i class="fa fa-id-card"></i>
                             </div>
 
                             <div class="form-group">
                                 <label for="password">Password *</label>
                                 <input type="password" id="password" name="password" required/>
-                                <i class="fa fa-lock"></i>
                                 <!-- Toggle button -->
                                 <span class="toggle-password" onclick="togglePassword()">👁️</span>
                             </div>
@@ -63,31 +60,26 @@
                             <div class="form-group">
                                 <label for="confirmPassword">Confirm Password *</label>
                                 <input type="password" id="confirmPassword" name="confirmPassword" required/>
-                                <i class="fa fa-lock-open"></i>
                             </div>
 
                             <div class="form-group">
                                 <label for="email">Email *</label>
                                 <input type="email" id="email" name="email" required value="${user.email}" />
-                                <i class="fa fa-envelope"></i>
                             </div>
 
                             <div class="form-group">
                                 <label for="birthDay">Birthday</label>
                                 <input type="date" id="birthDay" name="birthDay" value="${user.birthDay}" />
-                                <i class="fa fa-calendar"></i>
                             </div>
 
                             <div class="form-group">
                                 <label for="address">Address</label>
                                 <input type="text" id="address" name="address" value="${user.address}" />
-                                <i class="fa fa-location-dot"></i>
                             </div>
 
                             <div class="form-group">
                                 <label for="phone">Phone</label>
                                 <input type="text" id="phone" name="phone" value="${user.phone}" />
-                                <i class="fa fa-phone"></i>
                             </div>
 
                             <input type="submit" value="Join Now"/>
