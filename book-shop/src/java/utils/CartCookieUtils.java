@@ -20,7 +20,7 @@ public class CartCookieUtils {
     private static final String CART_COOKIE_NAME = "cart";
     private static final int COOKIE_MAX_AGE = 7 * 24 * 60 * 60; // 7 ngày
 
-    // Parse chuỗi "2-1,5-3" => Map<productId, quantity>
+    // 1. Xử lý chuỗi <-> Map
     public static Map<Integer, Integer> parseCartCookie(String cookieValue) {
         Map<Integer, Integer> cartMap = new HashMap<>();
         if (cookieValue == null || cookieValue.trim().isEmpty()) {
@@ -36,14 +36,13 @@ public class CartCookieUtils {
                     int quantity = Integer.parseInt(parts[1]);
                     cartMap.put(productId, quantity);
                 } catch (NumberFormatException e) {
-                    // ignore malformed entry
+                    // Bỏ qua dữ liệu lỗi
                 }
             }
         }
         return cartMap;
     }
 
-    // Convert Map<productId, quantity> => chuỗi "2-1,5-3"
     public static String toCookieString(Map<Integer, Integer> cartMap) {
         List<String> parts = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : cartMap.entrySet()) {
@@ -52,7 +51,7 @@ public class CartCookieUtils {
         return String.join(",", parts);
     }
 
-    // Lấy Map từ request cookie (sau khi giải mã)
+    // 2. GET/UPDATE/REMOVE cookie
     public static Map<Integer, Integer> getCartMapFromRequest(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String cartData = null;
@@ -72,7 +71,6 @@ public class CartCookieUtils {
         return parseCartCookie(cartData);
     }
 
-    // Cập nhật lại cookie (sau khi thêm/sửa) và mã hóa
     public static void updateCartCookie(HttpServletResponse response, Map<Integer, Integer> cartMap) {
         try {
             String rawValue = toCookieString(cartMap);
@@ -87,14 +85,37 @@ public class CartCookieUtils {
         }
     }
 
-    // Thêm hoặc cập nhật sản phẩm trong cookie
+    public static void clearCartCookie(HttpServletResponse response) {  //xoa cookie
+        Cookie cookie = new Cookie(CART_COOKIE_NAME, "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    // 3. Các thao tác với giỏ hàng
     public static void addToCartCookie(HttpServletRequest request, HttpServletResponse response, int productId, int quantity) {
         Map<Integer, Integer> cartMap = getCartMapFromRequest(request);
         cartMap.put(productId, cartMap.getOrDefault(productId, 0) + quantity);
         updateCartCookie(response, cartMap);
     }
 
-    // Tạo CartDTO từ cookie
+    public static void removeItemFromCookie(HttpServletRequest request, HttpServletResponse response, int productId) {
+        Map<Integer, Integer> cartMap = getCartMapFromRequest(request);
+        cartMap.remove(productId);
+        updateCartCookie(response, cartMap);
+    }
+
+    public static void updateItemQuantity(HttpServletRequest request, HttpServletResponse response, int productId, int newQuantity) {
+        Map<Integer, Integer> cartMap = getCartMapFromRequest(request);
+        if (newQuantity <= 0) {
+            cartMap.remove(productId);
+        } else {
+            cartMap.put(productId, newQuantity);
+        }
+        updateCartCookie(response, cartMap);
+    }
+
+    // 4. Tạo đối tượng CartDTO
     public static CartDTO getCartFromCookie(HttpServletRequest request) {
         ProductDAO dao = new ProductDAO();
         Map<Integer, Integer> cartMap = getCartMapFromRequest(request);
@@ -112,32 +133,6 @@ public class CartCookieUtils {
         return cart;
     }
 
-    // Xoá 1 sản phẩm
-    public static void removeItemFromCookie(HttpServletRequest request, HttpServletResponse response, int productId) {
-        Map<Integer, Integer> cartMap = getCartMapFromRequest(request);
-        cartMap.remove(productId);
-        updateCartCookie(response, cartMap);
-    }
-
-    // Cập nhật số lượng
-    public static void updateItemQuantity(HttpServletRequest request, HttpServletResponse response, int productId, int newQuantity) {
-        Map<Integer, Integer> cartMap = getCartMapFromRequest(request);
-        if (newQuantity <= 0) {
-            cartMap.remove(productId);
-        } else {
-            cartMap.put(productId, newQuantity);
-        }
-        updateCartCookie(response, cartMap);
-    }
-
-    // Xoá toàn bộ giỏ hàng (cookie)
-    public static void clearCartCookie(HttpServletResponse response) {
-        Cookie cookie = new Cookie(CART_COOKIE_NAME, "");
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-    }
-
     public static CartDTO buildCartFromMap(Map<Integer, Integer> cartMap) {
         ProductDAO dao = new ProductDAO();
         CartDTO cart = new CartDTO();
@@ -152,5 +147,4 @@ public class CartCookieUtils {
 
         return cart;
     }
-
 }

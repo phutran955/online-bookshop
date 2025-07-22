@@ -131,7 +131,7 @@ public class CartController extends HttpServlet {
         }
 
         // 7. Send confirmation email
-        OrderDTO order = odao.getOrderById(orderId); // Make sure includes UserDTO
+        OrderDTO order = odao.getOrderById(orderId); 
         if (order != null && order.getUser() != null) {
             String html = EmailUtlils.generateCheckoutConfirmationEmail(order.getUser(), order);
             EmailUtlils.sendEmail(order.getUser().getEmail(), "Xác nhận đơn hàng #" + orderId, html);
@@ -255,30 +255,6 @@ public class CartController extends HttpServlet {
         return "cart.jsp";
     }
 
-    /*private String handleAddToCart(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            int productId = Integer.parseInt(request.getParameter("id"));
-            int quantity = Integer.parseInt(request.getParameter("qty"));
-
-            // Lấy map từ request
-            Map<Integer, Integer> cartMap = CartCookieUtils.getCartMapFromRequest(request);
-
-            // Cập nhật map
-            cartMap.put(productId, cartMap.getOrDefault(productId, 0) + quantity);
-
-            // Cập nhật cookie
-            CartCookieUtils.updateCartCookie(response, cartMap);
-
-            // Tạo lại CartDTO từ cartMap vừa cập nhật
-            CartDTO cart = CartCookieUtils.buildCartFromMap(cartMap);
-            request.setAttribute("cartItems", cart.getListItems());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return "cart.jsp";
-    }*/
     private String handleViewCart(HttpServletRequest request, HttpServletResponse response) {
         CartDTO cart = CartCookieUtils.getCartFromCookie(request);
         request.setAttribute("cartItems", cart.getListItems());

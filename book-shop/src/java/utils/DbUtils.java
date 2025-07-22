@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class DbUtils {
 
-    private static final String DB_NAME = "bookDB";
+    private static final String DB_NAME = "bookDBN";
     private static final String DB_USER_NAME = "SA";
     private static final String DB_PASSWORD = "12345";
 

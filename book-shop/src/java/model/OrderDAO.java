@@ -263,7 +263,7 @@ public class OrderDAO {
         return orderId;
     }
 
-    public CartDTO getCart(String username) {
+    /*public CartDTO getCart(String username) {
         CartDTO cart = new CartDTO();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -318,7 +318,7 @@ public class OrderDAO {
         }
 
         return cart;
-    }
+    }*/
 
     private void closeResources(Connection conn, PreparedStatement ps, ResultSet rs) {
         try {
